@@ -1,0 +1,34 @@
+<Window x:Class="ActivityTracker.Views.Dialogs.GoalEditorDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Goal" Height="380" Width="420"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        Background="#F3F3F3">
+    <StackPanel Margin="24">
+        <TextBlock Text="Group" FontWeight="SemiBold" Margin="0,0,0,6"/>
+        <ComboBox x:Name="GroupCombo" FontSize="13" Padding="6,4"
+                  DisplayMemberPath="Name" SelectedValuePath="Id"
+                  SelectionChanged="GroupCombo_SelectionChanged"/>
+
+        <TextBlock Text="Activity (optional — leave empty for whole group)" FontWeight="SemiBold" Margin="0,16,0,6"/>
+        <ComboBox x:Name="ActivityCombo" FontSize="13" Padding="6,4"
+                  DisplayMemberPath="Name" SelectedValuePath="Id"/>
+
+        <TextBlock Text="Period" FontWeight="SemiBold" Margin="0,16,0,6"/>
+        <ComboBox x:Name="PeriodCombo" FontSize="13" SelectedIndex="0">
+            <ComboBoxItem Content="Weekly"/>
+            <ComboBoxItem Content="Monthly"/>
+        </ComboBox>
+
+        <TextBlock Text="Target Hours" FontWeight="SemiBold" Margin="0,16,0,6"/>
+        <TextBox x:Name="TargetBox" FontSize="13" Padding="6,4" Text="10"/>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,24,0,0">
+            <Button Content="Cancel" Style="{StaticResource SecondaryButtonStyle}"
+                    Click="Cancel_Click" Margin="0,0,8,0"/>
+            <Button Content="Save" Style="{StaticResource PrimaryButtonStyle}"
+                    Click="Save_Click"/>
+        </StackPanel>
+    </StackPanel>
+</Window>

@@ -1,0 +1,55 @@
+<Window x:Class="ActivityTracker.Views.Dialogs.GroupEditorDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Activity Group" Height="300" Width="400"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        Background="#F3F3F3">
+    <StackPanel Margin="24">
+        <TextBlock Text="Group Name" FontWeight="SemiBold" Margin="0,0,0,6"/>
+        <TextBox x:Name="NameBox" FontSize="14" Padding="8,6"/>
+
+        <TextBlock Text="Color" FontWeight="SemiBold" Margin="0,16,0,6"/>
+        <WrapPanel x:Name="ColorPanel">
+            <RadioButton Tag="#4A90D9" Style="{StaticResource ColorSwatchStyle}" IsChecked="True"/>
+            <RadioButton Tag="#50C878" Style="{StaticResource ColorSwatchStyle}"/>
+            <RadioButton Tag="#FF6B6B" Style="{StaticResource ColorSwatchStyle}"/>
+            <RadioButton Tag="#FFB347" Style="{StaticResource ColorSwatchStyle}"/>
+            <RadioButton Tag="#9B59B6" Style="{StaticResource ColorSwatchStyle}"/>
+            <RadioButton Tag="#1ABC9C" Style="{StaticResource ColorSwatchStyle}"/>
+            <RadioButton Tag="#E74C3C" Style="{StaticResource ColorSwatchStyle}"/>
+            <RadioButton Tag="#3498DB" Style="{StaticResource ColorSwatchStyle}"/>
+            <RadioButton Tag="#F39C12" Style="{StaticResource ColorSwatchStyle}"/>
+            <RadioButton Tag="#2ECC71" Style="{StaticResource ColorSwatchStyle}"/>
+        </WrapPanel>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,24,0,0">
+            <Button Content="Cancel" Style="{StaticResource SecondaryButtonStyle}"
+                    Click="Cancel_Click" Margin="0,0,8,0"/>
+            <Button Content="Save" Style="{StaticResource PrimaryButtonStyle}"
+                    Click="Save_Click"/>
+        </StackPanel>
+    </StackPanel>
+
+    <Window.Resources>
+        <Style x:Key="ColorSwatchStyle" TargetType="RadioButton">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="Bd" Width="32" Height="32" CornerRadius="4" Margin="4"
+                                Cursor="Hand" BorderThickness="3" BorderBrush="Transparent">
+                            <Border.Background>
+                                <SolidColorBrush Color="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}}"/>
+                            </Border.Background>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="#333"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+</Window>
