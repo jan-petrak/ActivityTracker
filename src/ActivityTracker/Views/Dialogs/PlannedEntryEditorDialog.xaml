@@ -1,71 +1,83 @@
 <Window x:Class="ActivityTracker.Views.Dialogs.PlannedEntryEditorDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Plan Session" Height="560" Width="450"
+        Title="Plan Session" Width="460"
+        SizeToContent="Height" MaxHeight="620"
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize"
-        Background="#F3F3F3">
+        Background="{StaticResource BgBase}">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisConverter"/>
+    </Window.Resources>
+
     <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="24">
-            <TextBlock Text="Activity" FontWeight="SemiBold" Margin="0,0,0,6"/>
-            <ComboBox x:Name="ActivityCombo" FontSize="13" Padding="6,4"
-                      DisplayMemberPath="Display" SelectedValuePath="Id"/>
+        <StackPanel Margin="28">
+            <TextBlock Text="Activity" FontWeight="SemiBold" Margin="0,0,0,8"
+                       Foreground="{StaticResource TextSecondary}" FontSize="12"/>
+            <ComboBox x:Name="ActivityCombo" DisplayMemberPath="Display" SelectedValuePath="Id"/>
 
-            <TextBlock Text="Date" FontWeight="SemiBold" Margin="0,16,0,6"/>
-            <DatePicker x:Name="DatePick" FontSize="13"/>
+            <TextBlock Text="Date" FontWeight="SemiBold" Margin="0,18,0,8"
+                       Foreground="{StaticResource TextSecondary}" FontSize="12"/>
+            <DatePicker x:Name="DatePick"/>
 
-            <Grid Margin="0,16,0,0">
+            <Grid Margin="0,18,0,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="16"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0">
-                    <TextBlock Text="Start Time" FontWeight="SemiBold" Margin="0,0,0,6"/>
-                    <TextBox x:Name="StartTimeBox" FontSize="13" Padding="6,4" Text="09:00"/>
+                    <TextBlock Text="Start Time" FontWeight="SemiBold" Margin="0,0,0,8"
+                               Foreground="{StaticResource TextSecondary}" FontSize="12"/>
+                    <TextBox x:Name="StartTimeBox" Style="{StaticResource DarkTextBoxStyle}" Text="09:00"/>
                 </StackPanel>
                 <StackPanel Grid.Column="2">
-                    <TextBlock Text="End Time" FontWeight="SemiBold" Margin="0,0,0,6"/>
-                    <TextBox x:Name="EndTimeBox" FontSize="13" Padding="6,4" Text="10:00"/>
+                    <TextBlock Text="End Time" FontWeight="SemiBold" Margin="0,0,0,8"
+                               Foreground="{StaticResource TextSecondary}" FontSize="12"/>
+                    <TextBox x:Name="EndTimeBox" Style="{StaticResource DarkTextBoxStyle}" Text="10:00"/>
                 </StackPanel>
             </Grid>
 
-            <!-- Recurrence -->
             <CheckBox x:Name="RecurringCheck" Content="Recurring" FontWeight="SemiBold"
-                      Margin="0,16,0,6"/>
+                      Foreground="{StaticResource TextPrimary}" Margin="0,18,0,8"/>
 
-            <StackPanel x:Name="RecurrencePanel" Margin="16,0,0,0"
-                        Visibility="{Binding IsChecked, ElementName=RecurringCheck, Converter={StaticResource BoolToVisConverter}}">
-                <TextBlock Text="Repeat" FontWeight="SemiBold" Margin="0,0,0,6"/>
-                <ComboBox x:Name="RecurrenceTypeCombo" FontSize="13" SelectedIndex="1">
+            <StackPanel Visibility="{Binding IsChecked, ElementName=RecurringCheck, Converter={StaticResource BoolToVisConverter}}"
+                        Margin="16,0,0,0">
+                <TextBlock Text="Repeat" FontWeight="SemiBold" Margin="0,0,0,8"
+                           Foreground="{StaticResource TextSecondary}" FontSize="12"/>
+                <ComboBox x:Name="RecurrenceTypeCombo" SelectedIndex="1">
                     <ComboBoxItem Content="Daily"/>
                     <ComboBoxItem Content="Weekly"/>
                     <ComboBoxItem Content="Monthly"/>
                 </ComboBox>
 
-                <TextBlock Text="Every N intervals" FontWeight="SemiBold" Margin="0,12,0,6"/>
-                <TextBox x:Name="IntervalBox" FontSize="13" Padding="6,4" Text="1"/>
+                <TextBlock Text="Every N intervals" FontWeight="SemiBold" Margin="0,14,0,8"
+                           Foreground="{StaticResource TextSecondary}" FontSize="12"/>
+                <TextBox x:Name="IntervalBox" Style="{StaticResource DarkTextBoxStyle}" Text="1"/>
 
-                <TextBlock Text="Days of week (for weekly)" FontWeight="SemiBold" Margin="0,12,0,6"/>
+                <TextBlock Text="Days of week (for weekly)" FontWeight="SemiBold" Margin="0,14,0,8"
+                           Foreground="{StaticResource TextSecondary}" FontSize="12"/>
                 <WrapPanel>
-                    <CheckBox x:Name="ChkMon" Content="Mon" Margin="0,0,12,0"/>
-                    <CheckBox x:Name="ChkTue" Content="Tue" Margin="0,0,12,0"/>
-                    <CheckBox x:Name="ChkWed" Content="Wed" Margin="0,0,12,0"/>
-                    <CheckBox x:Name="ChkThu" Content="Thu" Margin="0,0,12,0"/>
-                    <CheckBox x:Name="ChkFri" Content="Fri" Margin="0,0,12,0"/>
-                    <CheckBox x:Name="ChkSat" Content="Sat" Margin="0,0,12,0"/>
-                    <CheckBox x:Name="ChkSun" Content="Sun"/>
+                    <CheckBox x:Name="ChkMon" Content="Mon" Foreground="{StaticResource TextPrimary}" Margin="0,0,14,0"/>
+                    <CheckBox x:Name="ChkTue" Content="Tue" Foreground="{StaticResource TextPrimary}" Margin="0,0,14,0"/>
+                    <CheckBox x:Name="ChkWed" Content="Wed" Foreground="{StaticResource TextPrimary}" Margin="0,0,14,0"/>
+                    <CheckBox x:Name="ChkThu" Content="Thu" Foreground="{StaticResource TextPrimary}" Margin="0,0,14,0"/>
+                    <CheckBox x:Name="ChkFri" Content="Fri" Foreground="{StaticResource TextPrimary}" Margin="0,0,14,0"/>
+                    <CheckBox x:Name="ChkSat" Content="Sat" Foreground="{StaticResource TextPrimary}" Margin="0,0,14,0"/>
+                    <CheckBox x:Name="ChkSun" Content="Sun" Foreground="{StaticResource TextPrimary}"/>
                 </WrapPanel>
 
-                <TextBlock Text="End date (optional)" FontWeight="SemiBold" Margin="0,12,0,6"/>
-                <DatePicker x:Name="EndDatePick" FontSize="13"/>
+                <TextBlock Text="End date (optional)" FontWeight="SemiBold" Margin="0,14,0,8"
+                           Foreground="{StaticResource TextSecondary}" FontSize="12"/>
+                <DatePicker x:Name="EndDatePick"/>
             </StackPanel>
 
-            <TextBlock Text="Notes (optional)" FontWeight="SemiBold" Margin="0,16,0,6"/>
-            <TextBox x:Name="NotesBox" FontSize="13" Padding="6,4" Height="50"
+            <TextBlock Text="Notes (optional)" FontWeight="SemiBold" Margin="0,18,0,8"
+                       Foreground="{StaticResource TextSecondary}" FontSize="12"/>
+            <TextBox x:Name="NotesBox" Style="{StaticResource DarkTextBoxStyle}" Height="50"
                      TextWrapping="Wrap" AcceptsReturn="True"/>
 
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,24,0,0">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,28,0,0">
                 <Button Content="Cancel" Style="{StaticResource SecondaryButtonStyle}"
                         Click="Cancel_Click" Margin="0,0,8,0"/>
                 <Button Content="Save" Style="{StaticResource PrimaryButtonStyle}"
@@ -73,8 +85,4 @@
             </StackPanel>
         </StackPanel>
     </ScrollViewer>
-
-    <Window.Resources>
-        <BooleanToVisibilityConverter x:Key="BoolToVisConverter"/>
-    </Window.Resources>
 </Window>

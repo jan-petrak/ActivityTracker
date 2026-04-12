@@ -15,13 +15,12 @@
         </DataTemplate>
     </UserControl.Resources>
 
-    <DockPanel Margin="24">
+    <DockPanel Margin="32">
         <TextBlock Text="Calendar" Style="{StaticResource SectionHeader}" DockPanel.Dock="Top"/>
 
         <!-- Toolbar -->
-        <Border DockPanel.Dock="Top" Margin="0,0,0,16">
+        <Border DockPanel.Dock="Top" Margin="0,0,0,20">
             <DockPanel>
-                <!-- View mode buttons -->
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
                     <RadioButton Content="Day" GroupName="CalView"
                                  IsChecked="{Binding ViewMode, Converter={StaticResource StringMatchConverter}, ConverterParameter=Day, Mode=OneWay}"
@@ -37,22 +36,20 @@
                                  Style="{StaticResource ViewModeButtonStyle}"/>
                 </StackPanel>
 
-                <!-- Date navigation -->
                 <StackPanel Orientation="Horizontal">
-                    <Button Content="&#xE76B;" FontFamily="Segoe MDL2 Assets" FontSize="12"
+                    <Button Content="&#xE76B;" FontFamily="Segoe MDL2 Assets" FontSize="11"
                             Command="{Binding NavigateBackCommand}"
                             Style="{StaticResource SecondaryButtonStyle}" Padding="10,8"/>
                     <Button Content="Today"
                             Command="{Binding GoToTodayCommand}"
                             Style="{StaticResource SecondaryButtonStyle}" Margin="4,0"/>
-                    <Button Content="&#xE76C;" FontFamily="Segoe MDL2 Assets" FontSize="12"
+                    <Button Content="&#xE76C;" FontFamily="Segoe MDL2 Assets" FontSize="11"
                             Command="{Binding NavigateForwardCommand}"
                             Style="{StaticResource SecondaryButtonStyle}" Padding="10,8"/>
                 </StackPanel>
             </DockPanel>
         </Border>
 
-        <!-- Calendar content -->
         <ContentControl Content="{Binding ActiveCalendarView}"/>
     </DockPanel>
 </UserControl>

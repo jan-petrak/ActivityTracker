@@ -3,12 +3,6 @@ using ActivityTracker.Models;
 
 namespace ActivityTracker.Views.Dialogs;
 
-public class ActivityComboItem
-{
-    public Guid Id { get; set; }
-    public string Display { get; set; } = string.Empty;
-}
-
 public partial class TimeEntryEditorDialog : Window
 {
     public TimeEntry Result { get; private set; } = new();

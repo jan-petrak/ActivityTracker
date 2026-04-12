@@ -3,20 +3,18 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <DockPanel>
         <TextBlock Text="{Binding MonthHeader}" FontSize="16" FontWeight="SemiBold"
-                   Foreground="#333" DockPanel.Dock="Top" Margin="0,0,0,8"/>
+                   Foreground="{StaticResource TextPrimary}" DockPanel.Dock="Top" Margin="0,0,0,12"/>
 
-        <!-- Day of week headers -->
         <UniformGrid Rows="1" Columns="7" DockPanel.Dock="Top">
-            <TextBlock Text="Mon" HorizontalAlignment="Center" FontWeight="SemiBold" Foreground="#666" Margin="0,4"/>
-            <TextBlock Text="Tue" HorizontalAlignment="Center" FontWeight="SemiBold" Foreground="#666" Margin="0,4"/>
-            <TextBlock Text="Wed" HorizontalAlignment="Center" FontWeight="SemiBold" Foreground="#666" Margin="0,4"/>
-            <TextBlock Text="Thu" HorizontalAlignment="Center" FontWeight="SemiBold" Foreground="#666" Margin="0,4"/>
-            <TextBlock Text="Fri" HorizontalAlignment="Center" FontWeight="SemiBold" Foreground="#666" Margin="0,4"/>
-            <TextBlock Text="Sat" HorizontalAlignment="Center" FontWeight="SemiBold" Foreground="#999" Margin="0,4"/>
-            <TextBlock Text="Sun" HorizontalAlignment="Center" FontWeight="SemiBold" Foreground="#999" Margin="0,4"/>
+            <TextBlock Text="Mon" HorizontalAlignment="Center" FontWeight="SemiBold" Foreground="{StaticResource TextMuted}" Margin="0,4,0,8"/>
+            <TextBlock Text="Tue" HorizontalAlignment="Center" FontWeight="SemiBold" Foreground="{StaticResource TextMuted}" Margin="0,4,0,8"/>
+            <TextBlock Text="Wed" HorizontalAlignment="Center" FontWeight="SemiBold" Foreground="{StaticResource TextMuted}" Margin="0,4,0,8"/>
+            <TextBlock Text="Thu" HorizontalAlignment="Center" FontWeight="SemiBold" Foreground="{StaticResource TextMuted}" Margin="0,4,0,8"/>
+            <TextBlock Text="Fri" HorizontalAlignment="Center" FontWeight="SemiBold" Foreground="{StaticResource TextMuted}" Margin="0,4,0,8"/>
+            <TextBlock Text="Sat" HorizontalAlignment="Center" FontWeight="SemiBold" Foreground="{StaticResource TextSecondary}" Margin="0,4,0,8"/>
+            <TextBlock Text="Sun" HorizontalAlignment="Center" FontWeight="SemiBold" Foreground="{StaticResource TextSecondary}" Margin="0,4,0,8"/>
         </UniformGrid>
 
-        <!-- Month grid -->
         <ItemsControl ItemsSource="{Binding DayCells}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -25,37 +23,35 @@
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Border BorderBrush="#E0E0E0" BorderThickness="0.5" Padding="4" MinHeight="90">
+                    <Border BorderBrush="{StaticResource BorderSubtle}" BorderThickness="0.5"
+                            Padding="6" MinHeight="95">
                         <Border.Style>
                             <Style TargetType="Border">
-                                <Setter Property="Background" Value="White"/>
+                                <Setter Property="Background" Value="{StaticResource BgSurface}"/>
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding IsCurrentMonth}" Value="False">
-                                        <Setter Property="Background" Value="#FAFAFA"/>
-                                        <Setter Property="Opacity" Value="0.6"/>
+                                        <Setter Property="Background" Value="{StaticResource BgDeep}"/>
+                                        <Setter Property="Opacity" Value="0.5"/>
                                     </DataTrigger>
                                     <DataTrigger Binding="{Binding IsToday}" Value="True">
-                                        <Setter Property="Background" Value="#E8F0FE"/>
+                                        <Setter Property="Background" Value="{StaticResource AccentAmberSubtle}"/>
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
                         </Border.Style>
                         <StackPanel>
-                            <TextBlock Text="{Binding DayNumber}" FontWeight="SemiBold" FontSize="13"
-                                       Margin="0,0,0,4">
+                            <TextBlock Text="{Binding DayNumber}" FontWeight="SemiBold" FontSize="13" Margin="0,0,0,4">
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
-                                        <Setter Property="Foreground" Value="#333"/>
+                                        <Setter Property="Foreground" Value="{StaticResource TextSecondary}"/>
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding IsToday}" Value="True">
-                                                <Setter Property="Foreground" Value="#0078D4"/>
+                                                <Setter Property="Foreground" Value="{StaticResource AccentAmber}"/>
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
                                 </TextBlock.Style>
                             </TextBlock>
-
-                            <!-- Entry snippets -->
                             <ItemsControl ItemsSource="{Binding Entries}" MaxHeight="60">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
@@ -68,8 +64,7 @@
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
-
-                            <TextBlock FontSize="9" Foreground="#999" Margin="0,2,0,0"
+                            <TextBlock FontSize="9" Foreground="{StaticResource TextMuted}" Margin="0,2,0,0"
                                        Visibility="{Binding TotalHours, Converter={StaticResource NonZeroToVisibleConverter}, FallbackValue=Collapsed}">
                                 <Run Text="{Binding TotalHours, StringFormat='{}{0:0.#}h'}"/>
                             </TextBlock>

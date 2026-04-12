@@ -4,9 +4,9 @@
         xmlns:vm="clr-namespace:ActivityTracker.ViewModels"
         xmlns:views="clr-namespace:ActivityTracker.Views"
         Title="Activity Tracker"
-        Height="800" Width="1200"
+        Height="850" Width="1280"
         WindowStartupLocation="CenterScreen"
-        Background="#F3F3F3">
+        Background="{StaticResource BgBase}">
     <Window.Resources>
         <DataTemplate DataType="{x:Type vm:DashboardViewModel}">
             <views:DashboardView/>
@@ -24,37 +24,44 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="240"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <!-- Sidebar -->
-        <Border Grid.Column="0" Background="#2D2D30" Padding="0,12">
+        <!-- ── Sidebar ── -->
+        <Border Grid.Column="0" Background="{StaticResource BgDeep}" Padding="0,20,0,20">
             <DockPanel>
-                <TextBlock DockPanel.Dock="Top"
-                           Text="Activity Tracker"
-                           Foreground="White"
-                           FontSize="18"
-                           FontWeight="SemiBold"
-                           Margin="20,8,20,24"/>
+                <!-- Logo area -->
+                <StackPanel DockPanel.Dock="Top" Margin="24,0,24,32">
+                    <TextBlock Text="A C T I V I T Y"
+                               Foreground="{StaticResource AccentAmber}"
+                               FontSize="10" FontWeight="Bold"
+                               FontFamily="Segoe UI Variable, Segoe UI"/>
+                    <TextBlock Text="Tracker"
+                               Foreground="{StaticResource TextPrimary}"
+                               FontSize="22" FontWeight="Light"
+                               Margin="0,-2,0,0"
+                               FontFamily="Segoe UI Variable, Segoe UI"/>
+                </StackPanel>
 
+                <!-- Navigation -->
                 <StackPanel DockPanel.Dock="Top">
                     <RadioButton x:Name="NavDashboard"
                                  Style="{StaticResource NavButtonStyle}"
-                                 Content="&#xE80F;  Dashboard"
+                                 Content="Dashboard"
                                  IsChecked="True"
                                  Command="{Binding NavigateToCommand}"
                                  CommandParameter="Dashboard"/>
                     <RadioButton Style="{StaticResource NavButtonStyle}"
-                                 Content="&#xE787;  Calendar"
+                                 Content="Calendar"
                                  Command="{Binding NavigateToCommand}"
                                  CommandParameter="Calendar"/>
                     <RadioButton Style="{StaticResource NavButtonStyle}"
-                                 Content="&#xE8D2;  Activities"
+                                 Content="Activities"
                                  Command="{Binding NavigateToCommand}"
                                  CommandParameter="Activities"/>
                     <RadioButton Style="{StaticResource NavButtonStyle}"
-                                 Content="&#xE9D9;  Statistics"
+                                 Content="Statistics"
                                  Command="{Binding NavigateToCommand}"
                                  CommandParameter="Statistics"/>
                 </StackPanel>
@@ -63,9 +70,11 @@
             </DockPanel>
         </Border>
 
-        <!-- Content Area -->
-        <ContentControl Grid.Column="1"
-                        Content="{Binding CurrentView}"
-                        Margin="0"/>
+        <!-- Sidebar accent line -->
+        <Border Grid.Column="0" HorizontalAlignment="Right" Width="1"
+                Background="{StaticResource BorderSubtle}"/>
+
+        <!-- ── Content Area ── -->
+        <ContentControl Grid.Column="1" Content="{Binding CurrentView}" Margin="0"/>
     </Grid>
 </Window>

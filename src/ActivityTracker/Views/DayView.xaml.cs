@@ -14,12 +14,18 @@ public class HourLabel
 
 public partial class DayView : UserControl
 {
+    private const double PixelsPerMinute = 1.0; // 60px per hour
+    private const int SnapMinutes = 15;
+
     public static List<HourLabel> Hours { get; } = Enumerable.Range(0, 24)
         .Select(h => new HourLabel
         {
             Label = new TimeOnly(h, 0).ToString("h tt"),
             Top = h * 60.0
         }).ToList();
+
+    private bool _isDragging;
+    private double _dragStartY;
 
     public DayView()
     {
@@ -34,11 +40,8 @@ public partial class DayView : UserControl
 
     private void ScrollViewer_Loaded(object sender, RoutedEventArgs e)
     {
-        // Scroll to 7 AM by default
         if (sender is ScrollViewer sv)
-        {
             sv.ScrollToVerticalOffset(7 * 60);
-        }
     }
 
     private void PositionEntryBlocks()
@@ -51,7 +54,7 @@ public partial class DayView : UserControl
             if (container.ItemContainerGenerator.ContainerFromIndex(i) is ContentPresenter cp
                 && container.Items[i] is CalendarEntryItem entry)
             {
-                var top = (entry.StartTime.Hour * 60 + entry.StartTime.Minute);
+                var top = entry.StartTime.Hour * 60 + entry.StartTime.Minute;
                 var height = (entry.EndTime.ToTimeSpan() - entry.StartTime.ToTimeSpan()).TotalMinutes;
                 Canvas.SetTop(cp, top);
                 cp.Height = Math.Max(height, 20);
@@ -65,35 +68,110 @@ public partial class DayView : UserControl
         PositionEntryBlocks();
     }
 
-    private void Canvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    private static int SnapToGrid(double y)
     {
+        var totalMinutes = (int)(y / PixelsPerMinute);
+        var snapped = (int)(Math.Round((double)totalMinutes / SnapMinutes) * SnapMinutes);
+        return Math.Clamp(snapped, 0, 24 * 60);
+    }
+
+    private static TimeOnly MinutesToTime(int minutes)
+    {
+        minutes = Math.Clamp(minutes, 0, 23 * 60 + 59);
+        return new TimeOnly(minutes / 60, minutes % 60);
+    }
+
+    // --- Drag to create ---
+
+    private void DragCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        _isDragging = true;
+        _dragStartY = e.GetPosition(DragCanvas).Y;
+        DragCanvas.CaptureMouse();
+
+        var snappedTop = SnapToGrid(_dragStartY) * PixelsPerMinute;
+        Canvas.SetTop(DragPreview, snappedTop);
+        DragPreview.Height = SnapMinutes * PixelsPerMinute;
+        DragPreview.Width = Math.Max(DragCanvas.ActualWidth - 20, 100);
+        UpdatePreviewText(snappedTop, snappedTop + SnapMinutes * PixelsPerMinute);
+        DragPreview.Visibility = Visibility.Visible;
+
+        e.Handled = true;
+    }
+
+    private void DragCanvas_MouseMove(object sender, MouseEventArgs e)
+    {
+        if (!_isDragging) return;
+
+        var currentY = e.GetPosition(DragCanvas).Y;
+        var startMin = SnapToGrid(_dragStartY);
+        var endMin = SnapToGrid(currentY);
+
+        if (startMin == endMin)
+            endMin = startMin + SnapMinutes;
+
+        var topMin = Math.Min(startMin, endMin);
+        var bottomMin = Math.Max(startMin, endMin);
+
+        Canvas.SetTop(DragPreview, topMin * PixelsPerMinute);
+        DragPreview.Height = Math.Max((bottomMin - topMin) * PixelsPerMinute, SnapMinutes);
+        DragPreview.Width = Math.Max(DragCanvas.ActualWidth - 20, 100);
+        UpdatePreviewText(topMin * PixelsPerMinute, bottomMin * PixelsPerMinute);
+    }
+
+    private void DragCanvas_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+    {
+        if (!_isDragging) return;
+        _isDragging = false;
+        DragCanvas.ReleaseMouseCapture();
+        DragPreview.Visibility = Visibility.Collapsed;
+
         if (DataContext is not DayViewModel vm) return;
-        var pos = e.GetPosition((IInputElement)sender);
-        var hour = (int)(pos.Y / 60.0);
-        var snappedHour = Math.Clamp(hour, 0, 23);
+
+        var currentY = e.GetPosition(DragCanvas).Y;
+        var startMin = SnapToGrid(_dragStartY);
+        var endMin = SnapToGrid(currentY);
+
+        if (startMin == endMin)
+            endMin = startMin + SnapMinutes;
+
+        var topMin = Math.Min(startMin, endMin);
+        var bottomMin = Math.Max(startMin, endMin);
+
+        var startTime = MinutesToTime(topMin);
+        var endTime = MinutesToTime(bottomMin);
 
         var dataService = App.Services.GetService(typeof(IDataService)) as IDataService;
         var dialogService = App.Services.GetService(typeof(IDialogService)) as IDialogService;
         if (dataService == null || dialogService == null) return;
 
-        var newEntry = new Models.TimeEntry
+        // Create a PlannedEntry via drag
+        var planned = new Models.PlannedEntry
         {
             Date = vm.Date,
-            StartTime = new TimeOnly(snappedHour, 0),
-            EndTime = new TimeOnly(Math.Min(snappedHour + 1, 23), snappedHour + 1 > 23 ? 59 : 0)
+            StartTime = startTime,
+            EndTime = endTime
         };
 
-        if (dialogService.ShowTimeEntryEditor(dataService.Data.Groups, null, newEntry, out var result))
+        if (dialogService.ShowPlannedEntryEditor(dataService.Data.Groups, null, planned, out var result))
         {
-            result.ActivityId = result.ActivityId;
-            dataService.Data.TimeEntries.Add(result);
+            dataService.Data.PlannedEntries.Add(result);
             dataService.NotifyChanged();
             vm.Load(vm.Date);
         }
     }
 
+    private void UpdatePreviewText(double topPx, double bottomPx)
+    {
+        var startMin = (int)(topPx / PixelsPerMinute);
+        var endMin = (int)(bottomPx / PixelsPerMinute);
+        var s = MinutesToTime(startMin);
+        var en = MinutesToTime(endMin);
+        DragPreviewText.Text = $"{s:HH:mm} – {en:HH:mm}  (drag to plan)";
+    }
+
     private void EntryBlock_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
-        e.Handled = true; // Prevent Canvas click
+        e.Handled = true;
     }
 }
