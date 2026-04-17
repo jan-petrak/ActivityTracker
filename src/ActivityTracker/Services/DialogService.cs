@@ -21,7 +21,7 @@ public class DialogService : IDialogService
         return false;
     }
 
-    public bool ShowActivityEditor(List<ActivityGroup> groups, Guid defaultGroupId, Activity? existing, out Activity result)
+    public bool ShowActivityEditor(Activity? existing, out Activity result)
     {
         var dialog = new ActivityEditorDialog(existing)
         {

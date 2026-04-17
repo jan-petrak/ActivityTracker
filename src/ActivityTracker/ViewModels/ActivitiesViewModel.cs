@@ -73,7 +73,7 @@ public partial class ActivitiesViewModel : ObservableObject
     private void AddActivity()
     {
         if (SelectedGroup == null) return;
-        if (_dialogService.ShowActivityEditor(_dataService.Data.Groups, SelectedGroup.Id, null, out var activity))
+        if (_dialogService.ShowActivityEditor(null, out var activity))
         {
             activity.GroupId = SelectedGroup.Id;
             SelectedGroup.Activities.Add(activity);
@@ -85,7 +85,7 @@ public partial class ActivitiesViewModel : ObservableObject
     private void EditActivity()
     {
         if (SelectedGroup == null || SelectedActivity == null) return;
-        if (_dialogService.ShowActivityEditor(_dataService.Data.Groups, SelectedGroup.Id, SelectedActivity, out var updated))
+        if (_dialogService.ShowActivityEditor(SelectedActivity, out var updated))
         {
             SelectedActivity.Name = updated.Name;
             _dataService.NotifyChanged();

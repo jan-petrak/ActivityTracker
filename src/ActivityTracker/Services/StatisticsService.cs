@@ -71,9 +71,9 @@ public class StatisticsService : IStatisticsService
             var group = data.Groups.FirstOrDefault(g => g.Id == goal.GroupId);
             if (group == null) continue;
 
-            var activityIds = goal.ActivityId.HasValue
-                ? new HashSet<Guid> { goal.ActivityId.Value }
-                : group.Activities.Select(a => a.Id).ToHashSet();
+            HashSet<Guid> activityIds = goal.ActivityId.HasValue
+                ? [goal.ActivityId.Value]
+                : [.. group.Activities.Select(a => a.Id)];
 
             var hours = _calendarService.GetEntriesForRange(start, end)
                 .Where(e => activityIds.Contains(e.ActivityId))

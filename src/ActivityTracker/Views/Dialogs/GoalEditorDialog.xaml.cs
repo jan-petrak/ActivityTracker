@@ -6,13 +6,11 @@ namespace ActivityTracker.Views.Dialogs;
 
 public partial class GoalEditorDialog : Window
 {
-    private readonly List<ActivityGroup> _groups;
     public Goal Result { get; private set; } = new();
 
     public GoalEditorDialog(List<ActivityGroup> groups, Goal? existing)
     {
         InitializeComponent();
-        _groups = groups;
         GroupCombo.ItemsSource = groups;
 
         if (existing != null)

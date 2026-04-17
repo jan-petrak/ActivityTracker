@@ -1,0 +1,30 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Midnight Studio · Dark layered surfaces · Warm amber accent -->
+
+    <!-- Surfaces -->
+    <SolidColorBrush x:Key="BgDeep" Color="#0F1117"/>
+    <SolidColorBrush x:Key="BgBase" Color="#161822"/>
+    <SolidColorBrush x:Key="BgSurface" Color="#1E2030"/>
+    <SolidColorBrush x:Key="BgCard" Color="#252840"/>
+    <SolidColorBrush x:Key="BgHover" Color="#2E3150"/>
+
+    <!-- Borders -->
+    <SolidColorBrush x:Key="BorderSubtle" Color="#2E3150"/>
+    <SolidColorBrush x:Key="BorderMedium" Color="#3D4160"/>
+
+    <!-- Text -->
+    <SolidColorBrush x:Key="TextPrimary" Color="#E8E9F0"/>
+    <SolidColorBrush x:Key="TextSecondary" Color="#9498B0"/>
+    <SolidColorBrush x:Key="TextMuted" Color="#5D6180"/>
+
+    <!-- Accents -->
+    <SolidColorBrush x:Key="AccentAmber" Color="#F59E0B"/>
+    <SolidColorBrush x:Key="AccentAmberHover" Color="#FBBF24"/>
+    <SolidColorBrush x:Key="AccentAmberSubtle" Color="#2D2510"/>
+    <SolidColorBrush x:Key="AccentBlue" Color="#6366F1"/>
+    <SolidColorBrush x:Key="DangerRed" Color="#EF4444"/>
+    <SolidColorBrush x:Key="DangerRedHover" Color="#F87171"/>
+
+</ResourceDictionary>

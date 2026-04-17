@@ -159,9 +159,8 @@ public partial class WeekView : UserControl
         var startTime = MinutesToTime(topMin);
         var endTime = MinutesToTime(bottomMin);
 
-        var dataService = App.Services.GetService(typeof(IDataService)) as IDataService;
-        var dialogService = App.Services.GetService(typeof(IDialogService)) as IDialogService;
-        if (dataService == null || dialogService == null) return;
+        if (App.Services.GetService(typeof(IDataService)) is not IDataService dataService) return;
+        if (App.Services.GetService(typeof(IDialogService)) is not IDialogService dialogService) return;
 
         var planned = new Models.PlannedEntry
         {

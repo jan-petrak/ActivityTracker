@@ -17,12 +17,12 @@ public partial class DayView : UserControl
     private const double PixelsPerMinute = 1.0; // 60px per hour
     private const int SnapMinutes = 15;
 
-    public static List<HourLabel> Hours { get; } = Enumerable.Range(0, 24)
+    public static List<HourLabel> Hours { get; } = [.. Enumerable.Range(0, 24)
         .Select(h => new HourLabel
         {
             Label = new TimeOnly(h, 0).ToString("h tt"),
             Top = h * 60.0
-        }).ToList();
+        })];
 
     private bool _isDragging;
     private double _dragStartY;
@@ -55,7 +55,7 @@ public partial class DayView : UserControl
 
     private void PositionEntryBlocks()
     {
-        if (DataContext is not DayViewModel vm) return;
+        if (DataContext is not DayViewModel) return;
 
         var container = EntriesControl;
         for (var i = 0; i < container.Items.Count; i++)
@@ -150,9 +150,8 @@ public partial class DayView : UserControl
         var startTime = MinutesToTime(topMin);
         var endTime = MinutesToTime(bottomMin);
 
-        var dataService = App.Services.GetService(typeof(IDataService)) as IDataService;
-        var dialogService = App.Services.GetService(typeof(IDialogService)) as IDialogService;
-        if (dataService == null || dialogService == null) return;
+        if (App.Services.GetService(typeof(IDataService)) is not IDataService dataService) return;
+        if (App.Services.GetService(typeof(IDialogService)) is not IDialogService dialogService) return;
 
         // Create a PlannedEntry via drag
         var planned = new Models.PlannedEntry

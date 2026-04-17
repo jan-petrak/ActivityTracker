@@ -1,5 +1,3 @@
-using ActivityTracker.Models;
-
 namespace ActivityTracker.Services;
 
 public class CalendarService : ICalendarService
@@ -57,6 +55,6 @@ public class CalendarService : ICalendarService
             }
         }
 
-        return entries.OrderBy(e => e.Date).ThenBy(e => e.StartTime).ToList();
+        return [.. entries.OrderBy(e => e.Date).ThenBy(e => e.StartTime)];
     }
 }

@@ -1,5 +1,3 @@
-using ActivityTracker.Models;
-
 namespace ActivityTracker.Services;
 
 public class GroupSummary
