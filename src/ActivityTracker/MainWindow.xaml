@@ -1,12 +1,22 @@
 <Window x:Class="ActivityTracker.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
         xmlns:vm="clr-namespace:ActivityTracker.ViewModels"
         xmlns:views="clr-namespace:ActivityTracker.Views"
         Title="Activity Tracker"
         Height="850" Width="1280"
         WindowStartupLocation="CenterScreen"
-        Background="{StaticResource BgBase}">
+        Background="{StaticResource BgBase}"
+        Icon="pack://application:,,,/Assets/AppIcon.ico">
+    <shell:WindowChrome.WindowChrome>
+        <shell:WindowChrome CaptionHeight="44"
+                            CornerRadius="0"
+                            GlassFrameThickness="0"
+                            ResizeBorderThickness="6"
+                            UseAeroCaptionButtons="False"/>
+    </shell:WindowChrome.WindowChrome>
+
     <Window.Resources>
         <DataTemplate DataType="{x:Type vm:DashboardViewModel}">
             <views:DashboardView/>
@@ -20,61 +30,152 @@
         <DataTemplate DataType="{x:Type vm:StatisticsViewModel}">
             <views:StatisticsView/>
         </DataTemplate>
+
+        <!-- Caption (min/max/close) button -->
+        <Style x:Key="CaptionButtonStyle" TargetType="Button">
+            <Setter Property="Width" Value="46"/>
+            <Setter Property="Height" Value="44"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{StaticResource TextSecondary}"/>
+            <Setter Property="Cursor" Value="Arrow"/>
+            <Setter Property="shell:WindowChrome.IsHitTestVisibleInChrome" Value="True"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
+                                              TextElement.Foreground="{TemplateBinding Foreground}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{StaticResource BgHover}"/>
+                                <Setter Property="Foreground" Value="{StaticResource TextPrimary}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="CloseCaptionButtonStyle" TargetType="Button" BasedOn="{StaticResource CaptionButtonStyle}">
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#E81123"/>
+                    <Setter Property="Foreground" Value="White"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
     </Window.Resources>
 
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="240"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
+    <Border x:Name="RootBorder" BorderBrush="{StaticResource BorderSubtle}" BorderThickness="1"
+            Background="{StaticResource BgBase}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="44"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
-        <!-- ── Sidebar ── -->
-        <Border Grid.Column="0" Background="{StaticResource BgDeep}" Padding="0,20,0,20">
-            <DockPanel>
-                <!-- Logo area -->
-                <StackPanel DockPanel.Dock="Top" Margin="24,0,24,32">
-                    <TextBlock Text="A C T I V I T Y"
-                               Foreground="{StaticResource AccentAmber}"
-                               FontSize="10" FontWeight="Bold"
-                               FontFamily="Segoe UI Variable, Segoe UI"/>
-                    <TextBlock Text="Tracker"
-                               Foreground="{StaticResource TextPrimary}"
-                               FontSize="22" FontWeight="Light"
-                               Margin="0,-2,0,0"
-                               FontFamily="Segoe UI Variable, Segoe UI"/>
-                </StackPanel>
+            <!-- ── Custom Title Bar ── -->
+            <Border Grid.Row="0" Background="{StaticResource BgDeep}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
 
-                <!-- Navigation -->
-                <StackPanel DockPanel.Dock="Top">
-                    <RadioButton x:Name="NavDashboard"
-                                 Style="{StaticResource NavButtonStyle}"
-                                 Content="Dashboard"
-                                 IsChecked="True"
-                                 Command="{Binding NavigateToCommand}"
-                                 CommandParameter="Dashboard"/>
-                    <RadioButton Style="{StaticResource NavButtonStyle}"
-                                 Content="Calendar"
-                                 Command="{Binding NavigateToCommand}"
-                                 CommandParameter="Calendar"/>
-                    <RadioButton Style="{StaticResource NavButtonStyle}"
-                                 Content="Activities"
-                                 Command="{Binding NavigateToCommand}"
-                                 CommandParameter="Activities"/>
-                    <RadioButton Style="{StaticResource NavButtonStyle}"
-                                 Content="Statistics"
-                                 Command="{Binding NavigateToCommand}"
-                                 CommandParameter="Statistics"/>
-                </StackPanel>
+                    <!-- App icon + title -->
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center"
+                                Margin="14,0,0,0">
+                        <Image Source="pack://application:,,,/Assets/AppIcon.ico" Width="18" Height="18"
+                               Margin="0,0,10,0" RenderOptions.BitmapScalingMode="HighQuality"/>
+                        <TextBlock Text="Activity Tracker"
+                                   Foreground="{StaticResource TextPrimary}"
+                                   FontSize="12.5" FontWeight="SemiBold"
+                                   FontFamily="Segoe UI Variable, Segoe UI"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
 
-                <Border/> <!-- Spacer -->
-            </DockPanel>
-        </Border>
+                    <!-- Window controls -->
+                    <StackPanel Grid.Column="2" Orientation="Horizontal">
+                        <Button x:Name="MinimizeButton" Style="{StaticResource CaptionButtonStyle}"
+                                Click="MinimizeButton_Click" ToolTip="Minimize">
+                            <Path Data="M0,5 L10,5" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                  StrokeThickness="1" Width="10" Height="10"/>
+                        </Button>
+                        <Button x:Name="MaximizeButton" Style="{StaticResource CaptionButtonStyle}"
+                                Click="MaximizeButton_Click" ToolTip="Maximize">
+                            <Path x:Name="MaximizeGlyph"
+                                  Data="M0.5,0.5 L9.5,0.5 L9.5,9.5 L0.5,9.5 Z"
+                                  Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                  StrokeThickness="1" Width="10" Height="10"/>
+                        </Button>
+                        <Button x:Name="CloseButton" Style="{StaticResource CloseCaptionButtonStyle}"
+                                Click="CloseButton_Click" ToolTip="Close">
+                            <Path Data="M0,0 L10,10 M10,0 L0,10"
+                                  Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                  StrokeThickness="1" Width="10" Height="10"/>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
 
-        <!-- Sidebar accent line -->
-        <Border Grid.Column="0" HorizontalAlignment="Right" Width="1"
-                Background="{StaticResource BorderSubtle}"/>
+            <!-- ── Main content ── -->
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="240"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
 
-        <!-- ── Content Area ── -->
-        <ContentControl Grid.Column="1" Content="{Binding CurrentView}" Margin="0"/>
-    </Grid>
+                <!-- Sidebar -->
+                <Border Grid.Column="0" Background="{StaticResource BgDeep}" Padding="0,20,0,20">
+                    <DockPanel>
+                        <!-- Logo area -->
+                        <StackPanel DockPanel.Dock="Top" Margin="24,0,24,32">
+                            <TextBlock Text="A C T I V I T Y"
+                                       Foreground="{StaticResource AccentAmber}"
+                                       FontSize="10" FontWeight="Bold"
+                                       FontFamily="Segoe UI Variable, Segoe UI"/>
+                            <TextBlock Text="Tracker"
+                                       Foreground="{StaticResource TextPrimary}"
+                                       FontSize="22" FontWeight="Light"
+                                       Margin="0,-2,0,0"
+                                       FontFamily="Segoe UI Variable, Segoe UI"/>
+                        </StackPanel>
+
+                        <!-- Navigation -->
+                        <StackPanel DockPanel.Dock="Top">
+                            <RadioButton x:Name="NavDashboard"
+                                         Style="{StaticResource NavButtonStyle}"
+                                         Content="Dashboard"
+                                         IsChecked="True"
+                                         Command="{Binding NavigateToCommand}"
+                                         CommandParameter="Dashboard"/>
+                            <RadioButton Style="{StaticResource NavButtonStyle}"
+                                         Content="Calendar"
+                                         Command="{Binding NavigateToCommand}"
+                                         CommandParameter="Calendar"/>
+                            <RadioButton Style="{StaticResource NavButtonStyle}"
+                                         Content="Activities"
+                                         Command="{Binding NavigateToCommand}"
+                                         CommandParameter="Activities"/>
+                            <RadioButton Style="{StaticResource NavButtonStyle}"
+                                         Content="Statistics"
+                                         Command="{Binding NavigateToCommand}"
+                                         CommandParameter="Statistics"/>
+                        </StackPanel>
+
+                        <Border/>
+                    </DockPanel>
+                </Border>
+
+                <!-- Sidebar accent line -->
+                <Border Grid.Column="0" HorizontalAlignment="Right" Width="1"
+                        Background="{StaticResource BorderSubtle}"/>
+
+                <!-- Content Area -->
+                <ContentControl Grid.Column="1" Content="{Binding CurrentView}" Margin="0"/>
+            </Grid>
+        </Grid>
+    </Border>
 </Window>

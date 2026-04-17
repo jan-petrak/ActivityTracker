@@ -52,7 +52,7 @@ public partial class GroupEditorDialog : Window
         {
             if (rb.IsChecked == true)
             {
-                Result.Color = rb.Tag?.ToString() ?? "#4A90D9";
+                Result.Color = rb.Tag?.ToString() ?? "#6B8FD6";
                 break;
             }
         }

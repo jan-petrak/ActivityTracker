@@ -36,6 +36,15 @@ public partial class DayView : UserControl
     private void DayView_Loaded(object sender, RoutedEventArgs e)
     {
         PositionEntryBlocks();
+        EntriesControl.ItemContainerGenerator.StatusChanged += EntriesContainerGenerator_StatusChanged;
+    }
+
+    private void EntriesContainerGenerator_StatusChanged(object? sender, EventArgs e)
+    {
+        if (EntriesControl.ItemContainerGenerator.Status == System.Windows.Controls.Primitives.GeneratorStatus.ContainersGenerated)
+        {
+            PositionEntryBlocks();
+        }
     }
 
     private void ScrollViewer_Loaded(object sender, RoutedEventArgs e)

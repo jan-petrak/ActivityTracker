@@ -33,16 +33,16 @@
         <TextBlock Text="Color" FontWeight="SemiBold" Margin="0,20,0,8"
                    Foreground="{StaticResource TextSecondary}" FontSize="12"/>
         <WrapPanel x:Name="ColorPanel">
-            <RadioButton Tag="#4A90D9" Style="{StaticResource ColorSwatchStyle}" IsChecked="True"/>
-            <RadioButton Tag="#50C878" Style="{StaticResource ColorSwatchStyle}"/>
-            <RadioButton Tag="#FF6B6B" Style="{StaticResource ColorSwatchStyle}"/>
-            <RadioButton Tag="#FFB347" Style="{StaticResource ColorSwatchStyle}"/>
-            <RadioButton Tag="#9B59B6" Style="{StaticResource ColorSwatchStyle}"/>
-            <RadioButton Tag="#1ABC9C" Style="{StaticResource ColorSwatchStyle}"/>
-            <RadioButton Tag="#E74C3C" Style="{StaticResource ColorSwatchStyle}"/>
-            <RadioButton Tag="#3498DB" Style="{StaticResource ColorSwatchStyle}"/>
-            <RadioButton Tag="#F39C12" Style="{StaticResource ColorSwatchStyle}"/>
-            <RadioButton Tag="#2ECC71" Style="{StaticResource ColorSwatchStyle}"/>
+            <RadioButton Tag="#6B8FD6" Style="{StaticResource ColorSwatchStyle}" IsChecked="True"/>
+            <RadioButton Tag="#7FB77E" Style="{StaticResource ColorSwatchStyle}"/>
+            <RadioButton Tag="#E88B8B" Style="{StaticResource ColorSwatchStyle}"/>
+            <RadioButton Tag="#F0B86E" Style="{StaticResource ColorSwatchStyle}"/>
+            <RadioButton Tag="#B084CC" Style="{StaticResource ColorSwatchStyle}"/>
+            <RadioButton Tag="#5EC3BD" Style="{StaticResource ColorSwatchStyle}"/>
+            <RadioButton Tag="#E8795D" Style="{StaticResource ColorSwatchStyle}"/>
+            <RadioButton Tag="#8DCDD9" Style="{StaticResource ColorSwatchStyle}"/>
+            <RadioButton Tag="#D4A574" Style="{StaticResource ColorSwatchStyle}"/>
+            <RadioButton Tag="#C06C84" Style="{StaticResource ColorSwatchStyle}"/>
         </WrapPanel>
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,28,0,0">

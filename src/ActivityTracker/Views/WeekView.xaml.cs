@@ -32,6 +32,16 @@ public partial class WeekView : UserControl
     {
         if (sender is not ItemsControl ic) return;
 
+        PositionWeekEntries(ic);
+        ic.ItemContainerGenerator.StatusChanged += (_, _) =>
+        {
+            if (ic.ItemContainerGenerator.Status == System.Windows.Controls.Primitives.GeneratorStatus.ContainersGenerated)
+                PositionWeekEntries(ic);
+        };
+    }
+
+    private static void PositionWeekEntries(ItemsControl ic)
+    {
         ic.Dispatcher.BeginInvoke(new Action(() =>
         {
             for (var i = 0; i < ic.Items.Count; i++)

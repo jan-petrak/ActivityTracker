@@ -37,15 +37,21 @@
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal">
-                    <Button Content="&#xE76B;" FontFamily="Segoe MDL2 Assets" FontSize="11"
-                            Command="{Binding NavigateBackCommand}"
-                            Style="{StaticResource SecondaryButtonStyle}" Padding="10,8"/>
+                    <Button Command="{Binding NavigateBackCommand}"
+                            Style="{StaticResource SecondaryButtonStyle}" Padding="12,7">
+                        <Path Data="M8,2 L2,7 L8,12" Stroke="{StaticResource TextPrimary}"
+                              StrokeThickness="1.6" StrokeLineJoin="Round" StrokeStartLineCap="Round"
+                              StrokeEndLineCap="Round" Width="10" Height="14" Stretch="None"/>
+                    </Button>
                     <Button Content="Today"
                             Command="{Binding GoToTodayCommand}"
                             Style="{StaticResource SecondaryButtonStyle}" Margin="4,0"/>
-                    <Button Content="&#xE76C;" FontFamily="Segoe MDL2 Assets" FontSize="11"
-                            Command="{Binding NavigateForwardCommand}"
-                            Style="{StaticResource SecondaryButtonStyle}" Padding="10,8"/>
+                    <Button Command="{Binding NavigateForwardCommand}"
+                            Style="{StaticResource SecondaryButtonStyle}" Padding="12,7">
+                        <Path Data="M2,2 L8,7 L2,12" Stroke="{StaticResource TextPrimary}"
+                              StrokeThickness="1.6" StrokeLineJoin="Round" StrokeStartLineCap="Round"
+                              StrokeEndLineCap="Round" Width="10" Height="14" Stretch="None"/>
+                    </Button>
                 </StackPanel>
             </DockPanel>
         </Border>

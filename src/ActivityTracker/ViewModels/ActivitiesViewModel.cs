@@ -55,8 +55,8 @@ public partial class ActivitiesViewModel : ObservableObject
         if (_dialogService.ShowGroupEditor(null, out var group))
         {
             _dataService.Data.Groups.Add(group);
+            Groups.Add(group);
             _dataService.NotifyChanged();
-            Refresh();
         }
     }
 
@@ -82,9 +82,9 @@ public partial class ActivitiesViewModel : ObservableObject
         _dataService.Data.PlannedEntries.RemoveAll(e => activityIds.Contains(e.ActivityId));
         _dataService.Data.Goals.RemoveAll(g => g.GroupId == SelectedGroup.Id);
         _dataService.Data.Groups.Remove(SelectedGroup);
+        Groups.Remove(SelectedGroup);
         _dataService.NotifyChanged();
         SelectedGroup = null;
-        Refresh();
     }
 
     [RelayCommand]
@@ -96,7 +96,6 @@ public partial class ActivitiesViewModel : ObservableObject
             activity.GroupId = SelectedGroup.Id;
             SelectedGroup.Activities.Add(activity);
             _dataService.NotifyChanged();
-            Refresh();
         }
     }
 
@@ -108,7 +107,6 @@ public partial class ActivitiesViewModel : ObservableObject
         {
             SelectedActivity.Name = updated.Name;
             _dataService.NotifyChanged();
-            Refresh();
         }
     }
 
@@ -121,7 +119,6 @@ public partial class ActivitiesViewModel : ObservableObject
         SelectedGroup.Activities.Remove(SelectedActivity);
         _dataService.NotifyChanged();
         SelectedActivity = null;
-        Refresh();
     }
 
     [RelayCommand]
