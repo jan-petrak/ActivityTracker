@@ -1,5 +1,3 @@
-using ActivityTracker.Models;
-
 namespace ActivityTracker.Services;
 
 public class CalendarEntryItem
@@ -11,7 +9,6 @@ public class CalendarEntryItem
     public DateOnly Date { get; set; }
     public TimeOnly StartTime { get; set; }
     public TimeOnly EndTime { get; set; }
-    public bool IsPlanned { get; set; }
     public string? Notes { get; set; }
     public Guid ActivityId { get; set; }
 

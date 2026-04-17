@@ -5,16 +5,18 @@ namespace ActivityTracker.Services;
 public class StatisticsService : IStatisticsService
 {
     private readonly IDataService _dataService;
+    private readonly ICalendarService _calendarService;
 
-    public StatisticsService(IDataService dataService)
+    public StatisticsService(IDataService dataService, ICalendarService calendarService)
     {
         _dataService = dataService;
+        _calendarService = calendarService;
     }
 
     public StatsSummary CalculateForRange(DateOnly start, DateOnly end)
     {
         var data = _dataService.Data;
-        var entries = data.TimeEntries.Where(e => e.Date >= start && e.Date <= end).ToList();
+        var entries = _calendarService.GetEntriesForRange(start, end);
         var totalDays = (end.ToDateTime(TimeOnly.MinValue) - start.ToDateTime(TimeOnly.MinValue)).Days + 1;
 
         var groupSummaries = new List<GroupSummary>();
@@ -38,7 +40,6 @@ public class StatisticsService : IStatisticsService
             });
         }
 
-        // Hour distribution
         var hourDist = Enumerable.Range(0, 24).Select(h => new HourDistributionItem { Hour = h }).ToList();
         foreach (var entry in entries)
         {
@@ -74,8 +75,8 @@ public class StatisticsService : IStatisticsService
                 ? new HashSet<Guid> { goal.ActivityId.Value }
                 : group.Activities.Select(a => a.Id).ToHashSet();
 
-            var hours = data.TimeEntries
-                .Where(e => e.Date >= start && e.Date <= end && activityIds.Contains(e.ActivityId))
+            var hours = _calendarService.GetEntriesForRange(start, end)
+                .Where(e => activityIds.Contains(e.ActivityId))
                 .Sum(e => (e.EndTime.ToTimeSpan() - e.StartTime.ToTimeSpan()).TotalHours);
 
             var activityName = goal.ActivityId.HasValue

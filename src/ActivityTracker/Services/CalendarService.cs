@@ -26,28 +26,6 @@ public class CalendarService : ICalendarService
             .SelectMany(g => g.Activities.Select(a => (Group: g, Activity: a)))
             .ToDictionary(x => x.Activity.Id);
 
-        // Logged time entries
-        foreach (var te in data.TimeEntries)
-        {
-            if (te.Date < start || te.Date > end) continue;
-            if (!activityLookup.TryGetValue(te.ActivityId, out var info)) continue;
-
-            entries.Add(new CalendarEntryItem
-            {
-                SourceId = te.Id,
-                ActivityName = info.Activity.Name,
-                GroupName = info.Group.Name,
-                Color = info.Group.Color,
-                Date = te.Date,
-                StartTime = te.StartTime,
-                EndTime = te.EndTime,
-                IsPlanned = false,
-                Notes = te.Notes,
-                ActivityId = te.ActivityId
-            });
-        }
-
-        // Planned entries (one-off and recurring)
         foreach (var pe in data.PlannedEntries)
         {
             if (!activityLookup.TryGetValue(pe.ActivityId, out var info)) continue;
@@ -73,7 +51,6 @@ public class CalendarService : ICalendarService
                     Date = date,
                     StartTime = pe.StartTime,
                     EndTime = pe.EndTime,
-                    IsPlanned = true,
                     Notes = pe.Notes,
                     ActivityId = pe.ActivityId
                 });

@@ -73,46 +73,11 @@
                         </TextBlock>
                     </DockPanel>
 
-                    <DockPanel Visibility="{Binding SelectedActivity, Converter={StaticResource NotNullToVisibleConverter}, FallbackValue=Collapsed}">
-                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,16">
-                            <Button Content="+ Log Time" Style="{StaticResource PrimaryButtonStyle}" Margin="0,0,8,0"
-                                    Command="{Binding AddTimeEntryCommand}"/>
-                            <Button Content="+ Plan Session" Style="{StaticResource SecondaryButtonStyle}"
-                                    Command="{Binding AddPlannedEntryCommand}"/>
-                        </StackPanel>
-
-                        <ListView ItemsSource="{Binding SelectedActivityEntries}" BorderThickness="0"
-                                  Background="Transparent" Foreground="{StaticResource TextPrimary}">
-                            <ListView.View>
-                                <GridView>
-                                    <GridViewColumn Header="Date" Width="100"
-                                                    DisplayMemberBinding="{Binding Date, StringFormat='{}{0:yyyy-MM-dd}'}"/>
-                                    <GridViewColumn Header="Start" Width="70"
-                                                    DisplayMemberBinding="{Binding StartTime, StringFormat='{}{0:HH:mm}'}"/>
-                                    <GridViewColumn Header="End" Width="70"
-                                                    DisplayMemberBinding="{Binding EndTime, StringFormat='{}{0:HH:mm}'}"/>
-                                    <GridViewColumn Header="Notes" Width="200"
-                                                    DisplayMemberBinding="{Binding Notes}"/>
-                                    <GridViewColumn Header="" Width="130">
-                                        <GridViewColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <StackPanel Orientation="Horizontal">
-                                                    <Button Content="Edit" FontSize="11" Padding="10,4"
-                                                            Style="{StaticResource SecondaryButtonStyle}"
-                                                            Command="{Binding DataContext.EditTimeEntryCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                            CommandParameter="{Binding}" Margin="0,0,4,0"/>
-                                                    <Button Content="Del" FontSize="11" Padding="10,4"
-                                                            Style="{StaticResource DangerButtonStyle}"
-                                                            Command="{Binding DataContext.DeleteTimeEntryCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                            CommandParameter="{Binding}"/>
-                                                </StackPanel>
-                                            </DataTemplate>
-                                        </GridViewColumn.CellTemplate>
-                                    </GridViewColumn>
-                                </GridView>
-                            </ListView.View>
-                        </ListView>
-                    </DockPanel>
+                    <StackPanel Visibility="{Binding SelectedActivity, Converter={StaticResource NotNullToVisibleConverter}, FallbackValue=Collapsed}"
+                                Orientation="Horizontal">
+                        <Button Content="+ Plan Session" Style="{StaticResource PrimaryButtonStyle}"
+                                Command="{Binding AddPlannedEntryCommand}"/>
+                    </StackPanel>
                 </DockPanel>
             </Border>
         </Grid>

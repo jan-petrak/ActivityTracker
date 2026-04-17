@@ -36,21 +36,6 @@ public class DialogService : IDialogService
         return false;
     }
 
-    public bool ShowTimeEntryEditor(List<ActivityGroup> groups, Guid? defaultActivityId, TimeEntry? existing, out TimeEntry result)
-    {
-        var dialog = new TimeEntryEditorDialog(groups, defaultActivityId, existing)
-        {
-            Owner = Application.Current.MainWindow
-        };
-        if (dialog.ShowDialog() == true)
-        {
-            result = dialog.Result;
-            return true;
-        }
-        result = existing ?? new TimeEntry();
-        return false;
-    }
-
     public bool ShowPlannedEntryEditor(List<ActivityGroup> groups, Guid? defaultActivityId, PlannedEntry? existing, out PlannedEntry result)
     {
         var dialog = new PlannedEntryEditorDialog(groups, defaultActivityId, existing)
