@@ -11,9 +11,9 @@
                    Foreground="{StaticResource TextSecondary}" FontSize="12"/>
         <ComboBox x:Name="ActivityCombo" DisplayMemberPath="Display" SelectedValuePath="Id"/>
 
-        <TextBlock Text="Date" FontWeight="SemiBold" Margin="0,18,0,8"
+        <TextBlock Text="Date (YYYY-MM-DD)" FontWeight="SemiBold" Margin="0,18,0,8"
                    Foreground="{StaticResource TextSecondary}" FontSize="12"/>
-        <DatePicker x:Name="DatePick"/>
+        <TextBox x:Name="DateBox" Style="{StaticResource DarkTextBoxStyle}"/>
 
         <Grid Margin="0,18,0,0">
             <Grid.ColumnDefinitions>

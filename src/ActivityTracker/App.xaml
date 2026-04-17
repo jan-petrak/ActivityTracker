@@ -393,6 +393,8 @@
             </Setter>
         </Style>
 
+        <!-- ── Calendar styles handled by Fluent Dark (Application.ThemeMode) ── -->
+
         <!-- ── CheckBox (dark) ── -->
         <Style TargetType="CheckBox">
             <Setter Property="Foreground" Value="{StaticResource TextPrimary}"/>

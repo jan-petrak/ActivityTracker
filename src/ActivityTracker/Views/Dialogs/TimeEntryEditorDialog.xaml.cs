@@ -33,7 +33,7 @@ public partial class TimeEntryEditorDialog : Window
                 Notes = existing.Notes
             };
 
-            DatePick.SelectedDate = existing.Date.ToDateTime(TimeOnly.MinValue);
+            DateBox.Text = existing.Date.ToString("yyyy-MM-dd");
             StartTimeBox.Text = existing.StartTime.ToString("HH:mm");
             EndTimeBox.Text = existing.EndTime.ToString("HH:mm");
             NotesBox.Text = existing.Notes ?? string.Empty;
@@ -41,7 +41,7 @@ public partial class TimeEntryEditorDialog : Window
         }
         else
         {
-            DatePick.SelectedDate = DateTime.Today;
+            DateBox.Text = DateTime.Today.ToString("yyyy-MM-dd");
             if (defaultActivityId.HasValue)
                 ActivityCombo.SelectedValue = defaultActivityId.Value;
         }
@@ -55,9 +55,11 @@ public partial class TimeEntryEditorDialog : Window
             return;
         }
 
-        if (DatePick.SelectedDate is not DateTime date)
+        if (!DateTime.TryParseExact(DateBox.Text, "yyyy-MM-dd",
+                System.Globalization.CultureInfo.InvariantCulture,
+                System.Globalization.DateTimeStyles.None, out var date))
         {
-            MessageBox.Show("Please select a date.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show("Please enter a valid date (YYYY-MM-DD).", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 

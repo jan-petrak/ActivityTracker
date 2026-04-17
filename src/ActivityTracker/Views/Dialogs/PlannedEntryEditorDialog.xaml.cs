@@ -37,7 +37,7 @@ public partial class PlannedEntryEditorDialog : Window
                 Notes = existing.Notes
             };
 
-            DatePick.SelectedDate = existing.Date.ToDateTime(TimeOnly.MinValue);
+            DateBox.Text = existing.Date.ToString("yyyy-MM-dd");
             StartTimeBox.Text = existing.StartTime.ToString("HH:mm");
             EndTimeBox.Text = existing.EndTime.ToString("HH:mm");
             NotesBox.Text = existing.Notes ?? string.Empty;
@@ -54,12 +54,12 @@ public partial class PlannedEntryEditorDialog : Window
                     _dayCheckboxes[idx].IsChecked = true;
                 }
                 if (existing.Recurrence.EndDate.HasValue)
-                    EndDatePick.SelectedDate = existing.Recurrence.EndDate.Value.ToDateTime(TimeOnly.MinValue);
+                    EndDateBox.Text = existing.Recurrence.EndDate.Value.ToString("yyyy-MM-dd");
             }
         }
         else
         {
-            DatePick.SelectedDate = DateTime.Today;
+            DateBox.Text = DateTime.Today.ToString("yyyy-MM-dd");
             if (defaultActivityId.HasValue)
                 ActivityCombo.SelectedValue = defaultActivityId.Value;
         }
@@ -73,9 +73,11 @@ public partial class PlannedEntryEditorDialog : Window
             return;
         }
 
-        if (DatePick.SelectedDate is not DateTime date)
+        if (!DateTime.TryParseExact(DateBox.Text, "yyyy-MM-dd",
+                System.Globalization.CultureInfo.InvariantCulture,
+                System.Globalization.DateTimeStyles.None, out var date))
         {
-            MessageBox.Show("Please select a date.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show("Please enter a valid date (YYYY-MM-DD).", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 
@@ -120,8 +122,10 @@ public partial class PlannedEntryEditorDialog : Window
                 DaysOfWeek = daysOfWeek,
                 DayOfMonth = date.Day,
                 StartDate = DateOnly.FromDateTime(date),
-                EndDate = EndDatePick.SelectedDate.HasValue
-                    ? DateOnly.FromDateTime(EndDatePick.SelectedDate.Value)
+                EndDate = DateTime.TryParseExact(EndDateBox.Text, "yyyy-MM-dd",
+                        System.Globalization.CultureInfo.InvariantCulture,
+                        System.Globalization.DateTimeStyles.None, out var parsedEnd)
+                    ? DateOnly.FromDateTime(parsedEnd)
                     : null
             };
         }

@@ -89,7 +89,9 @@ public partial class WeekView : UserControl
 
         var snappedTop = SnapToGrid(_dragStartY) * PixelsPerMinute;
         Canvas.SetTop(_dragPreview, snappedTop);
+        Canvas.SetLeft(_dragPreview, 0);
         _dragPreview.Height = SnapMinutes * PixelsPerMinute;
+        _dragPreview.Width = canvas.ActualWidth;
         canvas.Children.Add(_dragPreview);
         UpdateWeekPreviewText(snappedTop, snappedTop + SnapMinutes * PixelsPerMinute);
 
@@ -112,6 +114,7 @@ public partial class WeekView : UserControl
 
         Canvas.SetTop(_dragPreview, topMin * PixelsPerMinute);
         _dragPreview.Height = Math.Max((bottomMin - topMin) * PixelsPerMinute, SnapMinutes);
+        _dragPreview.Width = _activeDragCanvas.ActualWidth;
         UpdateWeekPreviewText(topMin * PixelsPerMinute, bottomMin * PixelsPerMinute);
     }
 

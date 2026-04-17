@@ -16,9 +16,9 @@
                        Foreground="{StaticResource TextSecondary}" FontSize="12"/>
             <ComboBox x:Name="ActivityCombo" DisplayMemberPath="Display" SelectedValuePath="Id"/>
 
-            <TextBlock Text="Date" FontWeight="SemiBold" Margin="0,18,0,8"
+            <TextBlock Text="Date (YYYY-MM-DD)" FontWeight="SemiBold" Margin="0,18,0,8"
                        Foreground="{StaticResource TextSecondary}" FontSize="12"/>
-            <DatePicker x:Name="DatePick"/>
+            <TextBox x:Name="DateBox" Style="{StaticResource DarkTextBoxStyle}"/>
 
             <Grid Margin="0,18,0,0">
                 <Grid.ColumnDefinitions>
@@ -67,9 +67,9 @@
                     <CheckBox x:Name="ChkSun" Content="Sun" Foreground="{StaticResource TextPrimary}"/>
                 </WrapPanel>
 
-                <TextBlock Text="End date (optional)" FontWeight="SemiBold" Margin="0,14,0,8"
+                <TextBlock Text="End date (optional, YYYY-MM-DD)" FontWeight="SemiBold" Margin="0,14,0,8"
                            Foreground="{StaticResource TextSecondary}" FontSize="12"/>
-                <DatePicker x:Name="EndDatePick"/>
+                <TextBox x:Name="EndDateBox" Style="{StaticResource DarkTextBoxStyle}"/>
             </StackPanel>
 
             <TextBlock Text="Notes (optional)" FontWeight="SemiBold" Margin="0,18,0,8"
