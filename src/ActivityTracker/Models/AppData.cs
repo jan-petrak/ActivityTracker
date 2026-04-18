@@ -6,4 +6,5 @@ public class AppData
     public List<ActivityGroup> Groups { get; set; } = [];
     public List<PlannedEntry> PlannedEntries { get; set; } = [];
     public List<Goal> Goals { get; set; } = [];
+    public List<DayEvent> DayEvents { get; set; } = [];
 }

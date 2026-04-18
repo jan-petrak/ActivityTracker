@@ -182,4 +182,35 @@ public partial class DayView : UserControl
     {
         e.Handled = true;
     }
+
+    private void DateHeader_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
+    {
+    }
+
+    private void AddDayEvent_Click(object sender, RoutedEventArgs e)
+    {
+        if (DataContext is DayViewModel vm)
+            vm.AddDayEvent(vm.Date);
+    }
+
+    private void DayEventPill_Edit_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is MenuItem mi && mi.Tag is Guid id
+            && DataContext is DayViewModel vm)
+        {
+            vm.EditDayEvent(id);
+        }
+    }
+
+    private void DayEventPill_Delete_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is MenuItem mi && mi.Tag is Guid id
+            && DataContext is DayViewModel vm)
+        {
+            var result = MessageBox.Show("Delete this whole-day event?", "Confirm delete",
+                MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (result == MessageBoxResult.Yes)
+                vm.DeleteDayEvent(id);
+        }
+    }
 }

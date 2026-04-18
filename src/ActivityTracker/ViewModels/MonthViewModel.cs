@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using ActivityTracker.Models;
 using ActivityTracker.Services;
 
 namespace ActivityTracker.ViewModels;
@@ -11,8 +12,11 @@ public class MonthDayCell
     public bool IsToday { get; set; }
     public double TotalHours { get; set; }
     public ObservableCollection<CalendarEntryItem> Entries { get; set; } = [];
+    public List<DayEventOccurrence> DayEvents { get; set; } = [];
 
     public string DayNumber => Date.Day.ToString();
+    public bool HasDayEvents => DayEvents.Count > 0;
+    public string DayEventsTooltip => string.Join("\n", DayEvents.Select(e => e.Title));
 
     public string SummaryText
     {
@@ -31,6 +35,8 @@ public class MonthDayCell
 public partial class MonthViewModel : ObservableObject
 {
     private readonly ICalendarService _calendarService;
+    private readonly IDialogService _dialogService;
+    private readonly IDataService _dataService;
 
     [ObservableProperty]
     private int year;
@@ -44,13 +50,18 @@ public partial class MonthViewModel : ObservableObject
     [ObservableProperty]
     private ObservableCollection<MonthDayCell> dayCells = [];
 
-    public MonthViewModel(ICalendarService calendarService)
+    private DateOnly _referenceDate;
+
+    public MonthViewModel(ICalendarService calendarService, IDialogService dialogService, IDataService dataService)
     {
         _calendarService = calendarService;
+        _dialogService = dialogService;
+        _dataService = dataService;
     }
 
     public void Load(DateOnly referenceDate)
     {
+        _referenceDate = referenceDate;
         Year = referenceDate.Year;
         Month = referenceDate.Month;
         MonthHeader = referenceDate.ToString("MMMM yyyy");
@@ -59,10 +70,10 @@ public partial class MonthViewModel : ObservableObject
         var mondayOffset = ((int)firstOfMonth.DayOfWeek + 6) % 7;
         var gridStart = firstOfMonth.AddDays(-mondayOffset);
 
-        var lastOfMonth = new DateOnly(Year, Month, DateTime.DaysInMonth(Year, Month));
-        var gridEnd = gridStart.AddDays(41); // 6 weeks
+        var gridEnd = gridStart.AddDays(41);
 
         var allEntries = _calendarService.GetEntriesForRange(gridStart, gridEnd);
+        var allDayEvents = _calendarService.GetDayEventsForRange(gridStart, gridEnd);
         var today = DateOnly.FromDateTime(DateTime.Today);
 
         var cells = new ObservableCollection<MonthDayCell>();
@@ -70,15 +81,50 @@ public partial class MonthViewModel : ObservableObject
         {
             var day = gridStart.AddDays(i);
             var dayEntries = allEntries.Where(e => e.Date == day).ToList();
+            var dayDayEvents = allDayEvents.Where(e => e.Date == day).ToList();
             cells.Add(new MonthDayCell
             {
                 Date = day,
                 IsCurrentMonth = day.Month == Month,
                 IsToday = day == today,
                 TotalHours = dayEntries.Sum(e => e.DurationHours),
-                Entries = new ObservableCollection<CalendarEntryItem>(dayEntries)
+                Entries = new ObservableCollection<CalendarEntryItem>(dayEntries),
+                DayEvents = dayDayEvents
             });
         }
         DayCells = cells;
+    }
+
+    public void AddDayEvent(DateOnly targetDate)
+    {
+        var template = new DayEvent { Date = targetDate };
+        if (_dialogService.ShowDayEventEditor(template, out var result))
+        {
+            _dataService.Data.DayEvents.Add(result);
+            _dataService.NotifyChanged();
+            Load(_referenceDate);
+        }
+    }
+
+    public void EditDayEvent(Guid sourceId)
+    {
+        var existing = _dataService.Data.DayEvents.FirstOrDefault(d => d.Id == sourceId);
+        if (existing == null) return;
+        if (_dialogService.ShowDayEventEditor(existing, out var result))
+        {
+            var idx = _dataService.Data.DayEvents.FindIndex(d => d.Id == sourceId);
+            if (idx >= 0) _dataService.Data.DayEvents[idx] = result;
+            _dataService.NotifyChanged();
+            Load(_referenceDate);
+        }
+    }
+
+    public void DeleteDayEvent(Guid sourceId)
+    {
+        if (_dataService.Data.DayEvents.RemoveAll(d => d.Id == sourceId) > 0)
+        {
+            _dataService.NotifyChanged();
+            Load(_referenceDate);
+        }
     }
 }

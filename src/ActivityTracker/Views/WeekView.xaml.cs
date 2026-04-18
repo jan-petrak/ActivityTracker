@@ -188,4 +188,38 @@ public partial class WeekView : UserControl
         var en = MinutesToTime(endMin);
         tb.Text = $"{s:HH:mm}–{en:HH:mm}";
     }
+
+    private void DayHeader_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
+    {
+    }
+
+    private void AddDayEvent_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is MenuItem mi && mi.Tag is DateOnly date
+            && DataContext is WeekViewModel vm)
+        {
+            vm.AddDayEvent(date);
+        }
+    }
+
+    private void DayEventPill_Edit_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is MenuItem mi && mi.Tag is Guid id
+            && DataContext is WeekViewModel vm)
+        {
+            vm.EditDayEvent(id);
+        }
+    }
+
+    private void DayEventPill_Delete_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is MenuItem mi && mi.Tag is Guid id
+            && DataContext is WeekViewModel vm)
+        {
+            var result = MessageBox.Show("Delete this whole-day event?", "Confirm delete",
+                MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (result == MessageBoxResult.Yes)
+                vm.DeleteDayEvent(id);
+        }
+    }
 }

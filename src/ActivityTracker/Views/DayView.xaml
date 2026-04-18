@@ -2,9 +2,61 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:views="clr-namespace:ActivityTracker.Views">
+    <UserControl.Resources>
+        <Geometry x:Key="DayEventIconGeometry">M 0,0 L 7,0 L 5,3 L 7,6 L 0,6 Z M 0,0 L 0,10</Geometry>
+    </UserControl.Resources>
     <DockPanel>
         <TextBlock Text="{Binding DateHeader}" FontSize="16" FontWeight="SemiBold"
-                   Foreground="{StaticResource TextPrimary}" DockPanel.Dock="Top" Margin="0,0,0,10"/>
+                   Foreground="{StaticResource TextPrimary}" DockPanel.Dock="Top" Margin="0,0,0,10"
+                   MouseRightButtonUp="DateHeader_MouseRightButtonUp">
+            <TextBlock.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Add whole-day event" Click="AddDayEvent_Click"/>
+                </ContextMenu>
+            </TextBlock.ContextMenu>
+        </TextBlock>
+
+        <!-- All-day row (pinned to header) -->
+        <Border DockPanel.Dock="Top" BorderBrush="{StaticResource BorderSubtle}"
+                BorderThickness="0,0,0,1" Padding="60,6,0,8" MinHeight="18">
+            <Border.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Add whole-day event" Click="AddDayEvent_Click"/>
+                </ContextMenu>
+            </Border.ContextMenu>
+            <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="100"
+                          HorizontalScrollBarVisibility="Disabled">
+                <ItemsControl ItemsSource="{Binding DayEvents}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Margin="0,2" Padding="8,4" CornerRadius="4"
+                                    Background="{StaticResource BgHover}"
+                                    BorderBrush="{StaticResource BorderMedium}" BorderThickness="1"
+                                    Tag="{Binding SourceId}">
+                                <Border.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Edit" Click="DayEventPill_Edit_Click"
+                                                  Tag="{Binding SourceId}"/>
+                                        <MenuItem Header="Delete" Click="DayEventPill_Delete_Click"
+                                                  Tag="{Binding SourceId}"/>
+                                    </ContextMenu>
+                                </Border.ContextMenu>
+                                <DockPanel>
+                                    <Path DockPanel.Dock="Left" Data="{StaticResource DayEventIconGeometry}"
+                                          Stroke="{StaticResource AccentAmber}" StrokeThickness="1.2"
+                                          Fill="{StaticResource AccentAmber}"
+                                          Width="9" Height="11" Stretch="Uniform"
+                                          VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                    <TextBlock Text="{Binding Title}" Foreground="{StaticResource TextPrimary}"
+                                               FontSize="12" FontWeight="SemiBold"
+                                               TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
+                                </DockPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Border>
 
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
                       Loaded="ScrollViewer_Loaded">
@@ -91,6 +143,11 @@
                         MouseMove="DragCanvas_MouseMove"
                         MouseLeftButtonUp="DragCanvas_MouseLeftButtonUp"
                         Panel.ZIndex="-1">
+                    <Canvas.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Add whole-day event" Click="AddDayEvent_Click"/>
+                        </ContextMenu>
+                    </Canvas.ContextMenu>
                     <Border x:Name="DragPreview" Visibility="Collapsed"
                             Background="#33F59E0B" BorderBrush="{StaticResource AccentAmber}"
                             BorderThickness="2" CornerRadius="6" IsHitTestVisible="False" MinWidth="100">

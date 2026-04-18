@@ -25,8 +25,21 @@ public class CalendarEntryItem
     }
 }
 
+public class DayEventOccurrence
+{
+    public Guid SourceId { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public DateOnly Date { get; set; }
+    public int ReminderDaysBefore { get; set; }
+    public string? Notes { get; set; }
+
+    public int DaysUntil(DateOnly today) => Date.DayNumber - today.DayNumber;
+}
+
 public interface ICalendarService
 {
     List<CalendarEntryItem> GetEntriesForDate(DateOnly date);
     List<CalendarEntryItem> GetEntriesForRange(DateOnly start, DateOnly end);
+    List<DayEventOccurrence> GetDayEventsForRange(DateOnly start, DateOnly end);
+    List<DayEventOccurrence> GetUpcomingDayEvents(DateOnly today);
 }

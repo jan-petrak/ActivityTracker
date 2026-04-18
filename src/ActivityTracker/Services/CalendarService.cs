@@ -57,4 +57,76 @@ public class CalendarService : ICalendarService
 
         return [.. entries.OrderBy(e => e.Date).ThenBy(e => e.StartTime)];
     }
+
+    public List<DayEventOccurrence> GetDayEventsForRange(DateOnly start, DateOnly end)
+    {
+        var occurrences = new List<DayEventOccurrence>();
+
+        foreach (var de in _dataService.Data.DayEvents)
+        {
+            IEnumerable<DateOnly> dates;
+            if (de.Recurrence != null)
+            {
+                dates = _recurrenceService.ExpandOccurrences(de.Recurrence, start, end);
+            }
+            else
+            {
+                dates = de.Date >= start && de.Date <= end ? [de.Date] : [];
+            }
+
+            foreach (var date in dates)
+            {
+                occurrences.Add(new DayEventOccurrence
+                {
+                    SourceId = de.Id,
+                    Title = de.Title,
+                    Date = date,
+                    ReminderDaysBefore = de.ReminderDaysBefore,
+                    Notes = de.Notes
+                });
+            }
+        }
+
+        return [.. occurrences.OrderBy(o => o.Date).ThenBy(o => o.Title)];
+    }
+
+    public List<DayEventOccurrence> GetUpcomingDayEvents(DateOnly today)
+    {
+        var result = new List<DayEventOccurrence>();
+
+        foreach (var de in _dataService.Data.DayEvents)
+        {
+            if (de.ReminderDaysBefore <= 0) continue;
+
+            var windowEnd = today.AddDays(de.ReminderDaysBefore);
+            DateOnly? next = null;
+
+            if (de.Recurrence != null)
+            {
+                next = _recurrenceService
+                    .ExpandOccurrences(de.Recurrence, today, windowEnd)
+                    .Cast<DateOnly?>()
+                    .FirstOrDefault();
+            }
+            else if (de.Date >= today && de.Date <= windowEnd)
+            {
+                next = de.Date;
+            }
+
+            if (next is not { } nextDate) continue;
+            var daysUntil = nextDate.DayNumber - today.DayNumber;
+            if (daysUntil <= 0) continue;
+
+            result.Add(new DayEventOccurrence
+            {
+                SourceId = de.Id,
+                Title = de.Title,
+                Date = nextDate,
+                ReminderDaysBefore = de.ReminderDaysBefore,
+                Notes = de.Notes
+            });
+        }
+
+        return [.. result.OrderBy(o => o.Date).ThenBy(o => o.Title)];
+    }
 }

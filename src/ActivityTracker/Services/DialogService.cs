@@ -65,4 +65,19 @@ public class DialogService : IDialogService
         result = existing ?? new Goal();
         return false;
     }
+
+    public bool ShowDayEventEditor(DayEvent? existing, out DayEvent result)
+    {
+        var dialog = new DayEventEditorDialog(existing)
+        {
+            Owner = Application.Current.MainWindow
+        };
+        if (dialog.ShowDialog() == true)
+        {
+            result = dialog.Result;
+            return true;
+        }
+        result = existing ?? new DayEvent();
+        return false;
+    }
 }

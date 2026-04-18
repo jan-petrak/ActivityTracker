@@ -1,0 +1,74 @@
+<Window x:Class="ActivityTracker.Views.Dialogs.DayEventEditorDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Whole-Day Event" Width="460"
+        SizeToContent="Height" MaxHeight="640"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        Background="{StaticResource BgBase}">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisConverter"/>
+    </Window.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="28">
+            <TextBlock Text="Title" FontWeight="SemiBold" Margin="0,0,0,8"
+                       Foreground="{StaticResource TextSecondary}" FontSize="12"/>
+            <TextBox x:Name="TitleBox" Style="{StaticResource DarkTextBoxStyle}"/>
+
+            <TextBlock Text="Date (YYYY-MM-DD)" FontWeight="SemiBold" Margin="0,18,0,8"
+                       Foreground="{StaticResource TextSecondary}" FontSize="12"/>
+            <TextBox x:Name="DateBox" Style="{StaticResource DarkTextBoxStyle}"/>
+
+            <TextBlock Text="Remind me this many days before (0 = no reminder)" FontWeight="SemiBold" Margin="0,18,0,8"
+                       Foreground="{StaticResource TextSecondary}" FontSize="12"/>
+            <TextBox x:Name="ReminderDaysBox" Style="{StaticResource DarkTextBoxStyle}" Text="0"/>
+
+            <CheckBox x:Name="RecurringCheck" Content="Recurring" FontWeight="SemiBold"
+                      Foreground="{StaticResource TextPrimary}" Margin="0,18,0,8"/>
+
+            <StackPanel Visibility="{Binding IsChecked, ElementName=RecurringCheck, Converter={StaticResource BoolToVisConverter}}"
+                        Margin="16,0,0,0">
+                <TextBlock Text="Repeat" FontWeight="SemiBold" Margin="0,0,0,8"
+                           Foreground="{StaticResource TextSecondary}" FontSize="12"/>
+                <ComboBox x:Name="RecurrenceTypeCombo" SelectedIndex="2">
+                    <ComboBoxItem Content="Daily"/>
+                    <ComboBoxItem Content="Weekly"/>
+                    <ComboBoxItem Content="Monthly"/>
+                </ComboBox>
+
+                <TextBlock Text="Every N intervals" FontWeight="SemiBold" Margin="0,14,0,8"
+                           Foreground="{StaticResource TextSecondary}" FontSize="12"/>
+                <TextBox x:Name="IntervalBox" Style="{StaticResource DarkTextBoxStyle}" Text="1"/>
+
+                <TextBlock Text="Days of week (for weekly)" FontWeight="SemiBold" Margin="0,14,0,8"
+                           Foreground="{StaticResource TextSecondary}" FontSize="12"/>
+                <WrapPanel>
+                    <CheckBox x:Name="ChkMon" Content="Mon" Foreground="{StaticResource TextPrimary}" Margin="0,0,14,0"/>
+                    <CheckBox x:Name="ChkTue" Content="Tue" Foreground="{StaticResource TextPrimary}" Margin="0,0,14,0"/>
+                    <CheckBox x:Name="ChkWed" Content="Wed" Foreground="{StaticResource TextPrimary}" Margin="0,0,14,0"/>
+                    <CheckBox x:Name="ChkThu" Content="Thu" Foreground="{StaticResource TextPrimary}" Margin="0,0,14,0"/>
+                    <CheckBox x:Name="ChkFri" Content="Fri" Foreground="{StaticResource TextPrimary}" Margin="0,0,14,0"/>
+                    <CheckBox x:Name="ChkSat" Content="Sat" Foreground="{StaticResource TextPrimary}" Margin="0,0,14,0"/>
+                    <CheckBox x:Name="ChkSun" Content="Sun" Foreground="{StaticResource TextPrimary}"/>
+                </WrapPanel>
+
+                <TextBlock Text="End date (optional, YYYY-MM-DD)" FontWeight="SemiBold" Margin="0,14,0,8"
+                           Foreground="{StaticResource TextSecondary}" FontSize="12"/>
+                <TextBox x:Name="EndDateBox" Style="{StaticResource DarkTextBoxStyle}"/>
+            </StackPanel>
+
+            <TextBlock Text="Notes (optional)" FontWeight="SemiBold" Margin="0,18,0,8"
+                       Foreground="{StaticResource TextSecondary}" FontSize="12"/>
+            <TextBox x:Name="NotesBox" Style="{StaticResource DarkTextBoxStyle}" Height="50"
+                     TextWrapping="Wrap" AcceptsReturn="True"/>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,28,0,0">
+                <Button Content="Cancel" Style="{StaticResource SecondaryButtonStyle}"
+                        Click="Cancel_Click" Margin="0,0,8,0"/>
+                <Button Content="Save" Style="{StaticResource PrimaryButtonStyle}"
+                        Click="Save_Click"/>
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</Window>
