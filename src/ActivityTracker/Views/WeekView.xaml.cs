@@ -4,6 +4,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using ActivityTracker.Services;
 using ActivityTracker.ViewModels;
+using ActivityTracker.Views.Dialogs;
 
 namespace ActivityTracker.Views;
 
@@ -202,6 +203,16 @@ public partial class WeekView : UserControl
         }
     }
 
+    private void DayEventPill_Click(object sender, MouseButtonEventArgs e)
+    {
+        if (sender is FrameworkElement fe && fe.Tag is Guid id
+            && DataContext is WeekViewModel vm)
+        {
+            vm.EditDayEvent(id);
+            e.Handled = true;
+        }
+    }
+
     private void DayEventPill_Edit_Click(object sender, RoutedEventArgs e)
     {
         if (sender is MenuItem mi && mi.Tag is Guid id
@@ -216,9 +227,7 @@ public partial class WeekView : UserControl
         if (sender is MenuItem mi && mi.Tag is Guid id
             && DataContext is WeekViewModel vm)
         {
-            var result = MessageBox.Show("Delete this whole-day event?", "Confirm delete",
-                MessageBoxButton.YesNo, MessageBoxImage.Question);
-            if (result == MessageBoxResult.Yes)
+            if (MessageDialog.ShowConfirm("Confirm delete", "Delete this whole-day event?"))
                 vm.DeleteDayEvent(id);
         }
     }

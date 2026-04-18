@@ -89,7 +89,8 @@
                                             <Border Margin="0,1" Padding="4,2" CornerRadius="3"
                                                     Background="{StaticResource BgHover}"
                                                     BorderBrush="{StaticResource BorderMedium}" BorderThickness="1"
-                                                    Tag="{Binding SourceId}">
+                                                    Cursor="Hand" Tag="{Binding SourceId}"
+                                                    MouseLeftButtonUp="DayEventPill_Click">
                                                 <Border.ContextMenu>
                                                     <ContextMenu>
                                                         <MenuItem Header="Edit" Click="DayEventPill_Edit_Click"

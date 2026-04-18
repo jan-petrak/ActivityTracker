@@ -69,7 +69,7 @@ public partial class PlannedEntryEditorDialog : Window
     {
         if (ActivityCombo.SelectedValue is not Guid activityId)
         {
-            MessageBox.Show("Please select an activity.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageDialog.ShowInfo("Validation", "Please select an activity.");
             return;
         }
 
@@ -77,20 +77,20 @@ public partial class PlannedEntryEditorDialog : Window
                 System.Globalization.CultureInfo.InvariantCulture,
                 System.Globalization.DateTimeStyles.None, out var date))
         {
-            MessageBox.Show("Please enter a valid date (YYYY-MM-DD).", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageDialog.ShowInfo("Validation", "Please enter a valid date (YYYY-MM-DD).");
             return;
         }
 
         if (!TimeOnly.TryParse(StartTimeBox.Text, out var startTime) ||
             !TimeOnly.TryParse(EndTimeBox.Text, out var endTime))
         {
-            MessageBox.Show("Please enter valid times (HH:mm).", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageDialog.ShowInfo("Validation", "Please enter valid times (HH:mm).");
             return;
         }
 
         if (endTime <= startTime)
         {
-            MessageBox.Show("End time must be after start time.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageDialog.ShowInfo("Validation", "End time must be after start time.");
             return;
         }
 

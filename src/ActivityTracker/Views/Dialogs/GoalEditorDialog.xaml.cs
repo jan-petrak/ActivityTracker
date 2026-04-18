@@ -51,13 +51,13 @@ public partial class GoalEditorDialog : Window
     {
         if (GroupCombo.SelectedValue is not Guid groupId)
         {
-            MessageBox.Show("Please select a group.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageDialog.ShowInfo("Validation", "Please select a group.");
             return;
         }
 
         if (!double.TryParse(TargetBox.Text, out var target) || target <= 0)
         {
-            MessageBox.Show("Please enter a valid target (positive number).", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageDialog.ShowInfo("Validation", "Please enter a valid target (positive number).");
             return;
         }
 

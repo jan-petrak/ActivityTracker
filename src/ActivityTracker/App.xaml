@@ -12,6 +12,8 @@
                 <ResourceDictionary Source="Themes/Buttons.xaml"/>
                 <ResourceDictionary Source="Themes/Inputs.xaml"/>
                 <ResourceDictionary Source="Themes/Containers.xaml"/>
+                <ResourceDictionary Source="Themes/Menus.xaml"/>
+                <ResourceDictionary Source="Themes/Windows.xaml"/>
             </ResourceDictionary.MergedDictionaries>
 
             <!-- Value converters -->

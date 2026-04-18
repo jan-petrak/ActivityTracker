@@ -5,7 +5,7 @@
         SizeToContent="Height" MaxHeight="640"
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize"
-        Background="{StaticResource BgBase}">
+        Style="{StaticResource DialogWindowStyle}">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVisConverter"/>
     </Window.Resources>

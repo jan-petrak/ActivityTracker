@@ -89,6 +89,7 @@
                                   ToolTip="{Binding DayEventsTooltip}"
                                   Cursor="Hand"
                                   Visibility="{Binding HasDayEvents, Converter={StaticResource BoolToVisConverter}}"
+                                  MouseLeftButtonUp="DayEventIcon_MouseLeftButtonUp"
                                   MouseRightButtonUp="DayEventIcon_MouseRightButtonUp"
                                   Tag="{Binding Date}"/>
                         </Grid>

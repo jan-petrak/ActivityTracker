@@ -53,6 +53,8 @@ Dark "Midnight Studio" theme. `App.xaml` is a thin shell that merges the diction
 - `Themes/Buttons.xaml` — `PrimaryButtonStyle`, `SecondaryButtonStyle`, `DangerButtonStyle`, `NavButtonStyle`, `ViewModeButtonStyle`
 - `Themes/Inputs.xaml` — `TextBox` (default + `DarkTextBoxStyle`), `ComboBox`, `DatePicker`, `CheckBox`, `RadioButton`
 - `Themes/Containers.xaml` — `CardStyle`, `TreeView`, `ListView`, `GridViewColumnHeader`, `ScrollViewer`
+- `Themes/Menus.xaml` — `ContextMenu`, `MenuItem`, `Separator`, `ToolTip`
+- `Themes/Windows.xaml` — `DialogWindowStyle` (custom title bar + `shell:WindowChrome` for dialogs), `CaptionButtonStyle`, `CloseCaptionButtonStyle`
 
 Ordering matters: `Palette.xaml` must be merged first — everything else references its brushes via `StaticResource`.
 
@@ -63,7 +65,13 @@ Semantic brushes (use these, don't hardcode hex):
 - Text: `TextPrimary`, `TextSecondary`, `TextMuted`
 - Accents: `AccentAmber`, `AccentAmberHover`, `AccentAmberSubtle`, `AccentBlue`, `DangerRed`, `DangerRedHover`
 
-Most controls (`Button`, `TextBox`, `ComboBox`, `CheckBox`, `RadioButton`, `TreeView`, `ListView`) are retemplated to this palette. Date input is done via plain `TextBox` in `YYYY-MM-DD` format (the stock WPF `Calendar` popup cannot be cleanly dark-themed). **Do not set `Application.ThemeMode` / `Window.ThemeMode`** — it conflicts with the custom control templates (notably breaks `ComboBox`).
+Most controls (`Button`, `TextBox`, `ComboBox`, `CheckBox`, `RadioButton`, `TreeView`, `ListView`, `ContextMenu`, `MenuItem`, `ToolTip`) are retemplated to this palette. Date input is done via plain `TextBox` in `YYYY-MM-DD` format (the stock WPF `Calendar` popup cannot be cleanly dark-themed). **Do not set `Application.ThemeMode` / `Window.ThemeMode`** — it conflicts with the custom control templates (notably breaks `ComboBox`).
+
+**Every new UI surface must honor the dark theme.** Before introducing a new control, popup, menu, tooltip, or dialog, verify it doesn't fall back to Windows' default chrome (light backgrounds, system fonts). In particular:
+
+- **Never call `MessageBox.Show`.** Use `Views/Dialogs/MessageDialog` (`MessageDialog.ShowInfo` / `ShowConfirm`) — a themed modal that matches the rest of the app.
+- **New control types need a retemplate.** If you introduce a `ContextMenu`/`MenuItem`/`ToolTip`/`Popup`/`Expander`/etc. that isn't already styled under `Themes/`, add a style there. Confirm in a running build — stock WPF defaults are light and won't visually surface as broken until the feature is tested.
+- **No hardcoded hex.** Use the semantic brushes above. If a new role is needed, add it to `Palette.xaml` rather than inlining a color.
 
 ## Model invariants
 

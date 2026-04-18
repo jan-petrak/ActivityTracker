@@ -2,6 +2,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using ActivityTracker.ViewModels;
+using ActivityTracker.Views.Dialogs;
 
 namespace ActivityTracker.Views;
 
@@ -23,6 +24,33 @@ public partial class MonthView : UserControl
         {
             vm.AddDayEvent(date);
         }
+    }
+
+    private void DayEventIcon_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+    {
+        if (sender is not FrameworkElement fe) return;
+        if (fe.DataContext is not MonthDayCell cell) return;
+        if (DataContext is not MonthViewModel vm) return;
+        if (cell.DayEvents.Count == 0) return;
+
+        if (cell.DayEvents.Count == 1)
+        {
+            vm.EditDayEvent(cell.DayEvents[0].SourceId);
+        }
+        else
+        {
+            var menu = new ContextMenu { PlacementTarget = fe };
+            foreach (var occ in cell.DayEvents)
+            {
+                var item = new MenuItem { Header = occ.Title };
+                var sid = occ.SourceId;
+                item.Click += (_, _) => vm.EditDayEvent(sid);
+                menu.Items.Add(item);
+            }
+            menu.IsOpen = true;
+        }
+
+        e.Handled = true;
     }
 
     private void DayEventIcon_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
@@ -69,9 +97,7 @@ public partial class MonthView : UserControl
 
     private static void ConfirmDelete(MonthViewModel vm, System.Guid id)
     {
-        var result = MessageBox.Show("Delete this whole-day event?", "Confirm delete",
-            MessageBoxButton.YesNo, MessageBoxImage.Question);
-        if (result == MessageBoxResult.Yes)
+        if (MessageDialog.ShowConfirm("Confirm delete", "Delete this whole-day event?"))
             vm.DeleteDayEvent(id);
     }
 }

@@ -42,7 +42,7 @@ public partial class GroupEditorDialog : Window
     {
         if (string.IsNullOrWhiteSpace(NameBox.Text))
         {
-            MessageBox.Show("Please enter a group name.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageDialog.ShowInfo("Validation", "Please enter a group name.");
             return;
         }
 

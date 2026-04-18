@@ -30,7 +30,7 @@ public partial class ActivityEditorDialog : Window
     {
         if (string.IsNullOrWhiteSpace(NameBox.Text))
         {
-            MessageBox.Show("Please enter an activity name.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageDialog.ShowInfo("Validation", "Please enter an activity name.");
             return;
         }
 

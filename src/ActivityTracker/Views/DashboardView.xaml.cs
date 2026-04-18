@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using ActivityTracker.ViewModels;
+using ActivityTracker.Views.Dialogs;
 
 namespace ActivityTracker.Views;
 
@@ -34,9 +35,7 @@ public partial class DashboardView : UserControl
         if (sender is MenuItem mi && mi.Tag is Guid id
             && DataContext is DashboardViewModel vm)
         {
-            var result = MessageBox.Show("Delete this whole-day event?", "Confirm delete",
-                MessageBoxButton.YesNo, MessageBoxImage.Question);
-            if (result == MessageBoxResult.Yes)
+            if (MessageDialog.ShowConfirm("Confirm delete", "Delete this whole-day event?"))
                 vm.DeleteDayEvent(id);
         }
     }

@@ -57,7 +57,7 @@ public partial class DayEventEditorDialog : Window
         var title = TitleBox.Text?.Trim() ?? string.Empty;
         if (string.IsNullOrWhiteSpace(title))
         {
-            MessageBox.Show("Please enter a title.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageDialog.ShowInfo("Validation", "Please enter a title.");
             return;
         }
 
@@ -65,13 +65,13 @@ public partial class DayEventEditorDialog : Window
                 System.Globalization.CultureInfo.InvariantCulture,
                 System.Globalization.DateTimeStyles.None, out var date))
         {
-            MessageBox.Show("Please enter a valid date (YYYY-MM-DD).", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageDialog.ShowInfo("Validation", "Please enter a valid date (YYYY-MM-DD).");
             return;
         }
 
         if (!int.TryParse(ReminderDaysBox.Text, out var reminderDays) || reminderDays < 0)
         {
-            MessageBox.Show("Please enter a non-negative number of reminder days.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageDialog.ShowInfo("Validation", "Please enter a non-negative number of reminder days.");
             return;
         }
 

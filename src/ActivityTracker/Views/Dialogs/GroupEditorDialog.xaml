@@ -5,7 +5,7 @@
         SizeToContent="Height"
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize"
-        Background="{StaticResource BgBase}">
+        Style="{StaticResource DialogWindowStyle}">
     <Window.Resources>
         <Style x:Key="ColorSwatchStyle" TargetType="RadioButton">
             <Setter Property="Template">
