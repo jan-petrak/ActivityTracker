@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using ActivityTracker.Services;
 using ActivityTracker.ViewModels;
 using ActivityTracker.Views.Dialogs;
@@ -27,6 +28,21 @@ public partial class DayView : UserControl
 
     private bool _isDragging;
     private double _dragStartY;
+
+    private enum EntryDragMode { None, Move, ResizeTop, ResizeBottom }
+
+    private const double EntryEdgeZone = 6;
+    private const double EntryDragThreshold = 4;
+
+    private EntryDragMode _entryDragMode = EntryDragMode.None;
+    private bool _entryDragActive;
+    private Guid _entryDragId;
+    private Point _entryDragStartPoint;
+    private double _entryOriginalTop;
+    private double _entryOriginalHeight;
+    private ContentPresenter? _entryDragPresenter;
+    private Border? _entryDragBorder;
+    private KeyEventHandler? _entryDragKeyHandler;
 
     public DayView()
     {
@@ -187,17 +203,175 @@ public partial class DayView : UserControl
 
     private void EntryBlock_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
+        if (sender is not Border border || border.Tag is not Guid id)
+        {
+            e.Handled = true;
+            return;
+        }
+        if (VisualTreeHelper.GetParent(border) is not ContentPresenter presenter)
+        {
+            e.Handled = true;
+            return;
+        }
+
+        var point = e.GetPosition(border);
+        var mode = point.Y <= EntryEdgeZone ? EntryDragMode.ResizeTop
+            : point.Y >= border.ActualHeight - EntryEdgeZone ? EntryDragMode.ResizeBottom
+            : EntryDragMode.Move;
+
+        _entryDragMode = mode;
+        _entryDragActive = false;
+        _entryDragId = id;
+        _entryDragStartPoint = e.GetPosition(DragCanvas);
+        _entryDragPresenter = presenter;
+        _entryDragBorder = border;
+        _entryOriginalTop = Canvas.GetTop(presenter);
+        _entryOriginalHeight = double.IsNaN(presenter.Height) ? presenter.ActualHeight : presenter.Height;
+
+        border.CaptureMouse();
         e.Handled = true;
+    }
+
+    private void EntryBlock_MouseMove(object sender, MouseEventArgs e)
+    {
+        if (sender is not Border border) return;
+
+        if (!border.IsMouseCaptured || _entryDragMode == EntryDragMode.None)
+        {
+            var pt = e.GetPosition(border);
+            border.Cursor = (pt.Y <= EntryEdgeZone || pt.Y >= border.ActualHeight - EntryEdgeZone)
+                ? Cursors.SizeNS
+                : Cursors.SizeAll;
+            return;
+        }
+
+        var current = e.GetPosition(DragCanvas);
+        var dy = current.Y - _entryDragStartPoint.Y;
+
+        if (!_entryDragActive)
+        {
+            if (Math.Abs(dy) < EntryDragThreshold) return;
+            _entryDragActive = true;
+            HookEntryDragEscape();
+        }
+
+        var snappedDelta = SnapDelta(dy);
+        var origStart = (int)Math.Round(_entryOriginalTop);
+        var origEnd = (int)Math.Round(_entryOriginalTop + _entryOriginalHeight);
+        int newStart = origStart, newEnd = origEnd;
+
+        switch (_entryDragMode)
+        {
+            case EntryDragMode.Move:
+                newStart = origStart + snappedDelta;
+                newEnd = origEnd + snappedDelta;
+                if (newStart < 0) { newEnd -= newStart; newStart = 0; }
+                if (newEnd > 24 * 60) { newStart -= (newEnd - 24 * 60); newEnd = 24 * 60; }
+                break;
+            case EntryDragMode.ResizeTop:
+                newStart = Math.Clamp(origStart + snappedDelta, 0, origEnd - SnapMinutes);
+                newEnd = origEnd;
+                break;
+            case EntryDragMode.ResizeBottom:
+                newStart = origStart;
+                newEnd = Math.Clamp(origEnd + snappedDelta, origStart + SnapMinutes, 24 * 60);
+                break;
+        }
+
+        if (_entryDragPresenter != null)
+        {
+            Canvas.SetTop(_entryDragPresenter, newStart);
+            _entryDragPresenter.Height = Math.Max(newEnd - newStart, 20);
+        }
     }
 
     private void EntryBlock_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
     {
-        if (sender is FrameworkElement fe && fe.Tag is Guid id
-            && DataContext is DayViewModel vm)
+        if (sender is not Border border || border.Tag is not Guid id)
         {
-            vm.EditEntry(id);
-            e.Handled = true;
+            ResetEntryDragState();
+            return;
         }
+
+        if (border.IsMouseCaptured) border.ReleaseMouseCapture();
+
+        var wasActive = _entryDragActive;
+        var presenter = _entryDragPresenter;
+        var origTop = _entryOriginalTop;
+        var origHeight = _entryOriginalHeight;
+
+        ResetEntryDragState();
+
+        if (!wasActive)
+        {
+            if (DataContext is DayViewModel vmClick) vmClick.EditEntry(id);
+            e.Handled = true;
+            return;
+        }
+
+        if (presenter == null || DataContext is not DayViewModel vm)
+        {
+            e.Handled = true;
+            return;
+        }
+
+        var newTop = Canvas.GetTop(presenter);
+        var newHeight = presenter.Height;
+        var newStart = MinutesToTime((int)Math.Round(newTop));
+        var newEnd = MinutesToTime((int)Math.Round(newTop + newHeight));
+
+        if (!vm.Reschedule(id, newStart, newEnd))
+        {
+            Canvas.SetTop(presenter, origTop);
+            presenter.Height = Math.Max(origHeight, 20);
+        }
+        e.Handled = true;
+    }
+
+    private static int SnapDelta(double dy)
+    {
+        var minutes = dy / PixelsPerMinute;
+        return (int)Math.Round(minutes / SnapMinutes) * SnapMinutes;
+    }
+
+    private void ResetEntryDragState()
+    {
+        UnhookEntryDragEscape();
+        _entryDragMode = EntryDragMode.None;
+        _entryDragActive = false;
+        _entryDragPresenter = null;
+        _entryDragBorder = null;
+    }
+
+    private void HookEntryDragEscape()
+    {
+        var window = Window.GetWindow(this);
+        if (window == null) return;
+        _entryDragKeyHandler = (_, ev) =>
+        {
+            if (ev.Key == Key.Escape) CancelEntryDrag();
+        };
+        window.PreviewKeyDown += _entryDragKeyHandler;
+    }
+
+    private void UnhookEntryDragEscape()
+    {
+        if (_entryDragKeyHandler == null) return;
+        var window = Window.GetWindow(this);
+        if (window != null) window.PreviewKeyDown -= _entryDragKeyHandler;
+        _entryDragKeyHandler = null;
+    }
+
+    private void CancelEntryDrag()
+    {
+        if (_entryDragBorder?.IsMouseCaptured == true)
+            _entryDragBorder.ReleaseMouseCapture();
+        if (_entryDragPresenter != null)
+        {
+            Canvas.SetTop(_entryDragPresenter, _entryOriginalTop);
+            _entryDragPresenter.Height = Math.Max(_entryOriginalHeight, 20);
+        }
+        ResetEntryDragState();
     }
 
     private void EntryBlock_Edit_Click(object sender, RoutedEventArgs e)

@@ -145,4 +145,23 @@ public partial class WeekViewModel : ObservableObject
             Load(WeekStart);
         }
     }
+
+    public bool Reschedule(Guid sourceId, DateOnly occurrenceDate, DateOnly newDate, TimeOnly newStart, TimeOnly newEnd)
+    {
+        var entry = _dataService.Data.PlannedEntries.FirstOrDefault(p => p.Id == sourceId);
+        if (entry == null) return false;
+
+        var scope = Views.Dialogs.RecurrenceEditScope.WholeSeries;
+        if (entry.Recurrence != null)
+        {
+            scope = Views.Dialogs.RecurrencePromptDialog.Show(
+                "This is a recurring entry. Apply the change to just this occurrence or to the whole series?");
+            if (scope == Views.Dialogs.RecurrenceEditScope.Cancel) return false;
+        }
+
+        var applied = PlannedEntryRescheduler.TryReschedule(
+            _dataService, _auditLog, entry, occurrenceDate, newDate, newStart, newEnd, scope);
+        if (applied) Load(WeekStart);
+        return applied;
+    }
 }

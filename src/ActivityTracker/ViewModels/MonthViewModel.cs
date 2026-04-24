@@ -173,4 +173,6 @@ public partial class MonthViewModel : ObservableObject
             Load(_referenceDate);
         }
     }
+
+    
 }

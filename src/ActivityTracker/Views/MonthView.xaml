@@ -28,14 +28,7 @@
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <Border BorderBrush="{StaticResource BorderSubtle}" BorderThickness="0.5"
-                            Padding="6" MinHeight="95" Tag="{Binding Date}"
-                            MouseRightButtonUp="DayCell_MouseRightButtonUp">
-                        <Border.ContextMenu>
-                            <ContextMenu>
-                                <MenuItem Header="Add whole-day event" Click="AddDayEvent_Click"
-                                          Tag="{Binding Date}"/>
-                            </ContextMenu>
-                        </Border.ContextMenu>
+                            Padding="6" MinHeight="95">
                         <Border.Style>
                             <Style TargetType="Border">
                                 <Setter Property="Background" Value="{StaticResource BgSurface}"/>
@@ -67,24 +60,12 @@
                                 <ItemsControl ItemsSource="{Binding Entries}" MaxHeight="60">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
-                                            <Border Background="Transparent" Cursor="Hand"
-                                                    Tag="{Binding SourceId}" Margin="0,1"
-                                                    MouseLeftButtonUp="EntryRow_MouseLeftButtonUp">
-                                                <Border.ContextMenu>
-                                                    <ContextMenu>
-                                                        <MenuItem Header="Edit" Click="EntryRow_Edit_Click"
-                                                                  Tag="{Binding SourceId}"/>
-                                                        <MenuItem Header="Delete" Click="EntryRow_Delete_Click"
-                                                                  Tag="{Binding SourceId}"/>
-                                                    </ContextMenu>
-                                                </Border.ContextMenu>
-                                                <TextBlock Text="{Binding Summary}" FontSize="9"
-                                                           TextTrimming="CharacterEllipsis">
-                                                    <TextBlock.Foreground>
-                                                        <Binding Path="Color" Converter="{StaticResource StringToBrushConverter}"/>
-                                                    </TextBlock.Foreground>
-                                                </TextBlock>
-                                            </Border>
+                                            <TextBlock Text="{Binding Summary}" FontSize="9"
+                                                       TextTrimming="CharacterEllipsis" Margin="0,1">
+                                                <TextBlock.Foreground>
+                                                    <Binding Path="Color" Converter="{StaticResource StringToBrushConverter}"/>
+                                                </TextBlock.Foreground>
+                                            </TextBlock>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
@@ -99,11 +80,7 @@
                                   Fill="{StaticResource AccentAmber}"
                                   Width="10" Height="12" Stretch="Uniform"
                                   ToolTip="{Binding DayEventsTooltip}"
-                                  Cursor="Hand"
-                                  Visibility="{Binding HasDayEvents, Converter={StaticResource BoolToVisConverter}}"
-                                  MouseLeftButtonUp="DayEventIcon_MouseLeftButtonUp"
-                                  MouseRightButtonUp="DayEventIcon_MouseRightButtonUp"
-                                  Tag="{Binding Date}"/>
+                                  Visibility="{Binding HasDayEvents, Converter={StaticResource BoolToVisConverter}}"/>
                         </Grid>
                     </Border>
                 </DataTemplate>

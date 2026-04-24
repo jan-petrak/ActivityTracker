@@ -116,9 +116,10 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Border CornerRadius="6" Padding="10,6" Margin="0,0,16,0"
-                                    MinWidth="200" Cursor="Hand" Tag="{Binding SourceId}"
+                                    MinWidth="200" Tag="{Binding SourceId}"
                                     MouseLeftButtonDown="EntryBlock_MouseLeftButtonDown"
-                                    MouseLeftButtonUp="EntryBlock_MouseLeftButtonUp">
+                                    MouseLeftButtonUp="EntryBlock_MouseLeftButtonUp"
+                                    MouseMove="EntryBlock_MouseMove">
                                 <Border.Background>
                                     <Binding Path="Color" Converter="{StaticResource StringToBrushConverter}"/>
                                 </Border.Background>
