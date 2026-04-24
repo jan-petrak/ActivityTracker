@@ -174,6 +174,12 @@ public partial class WeekView : UserControl
         {
             dataService.Data.PlannedEntries.Add(result);
             dataService.NotifyChanged();
+            if (App.Services.GetService(typeof(IAuditLogService)) is IAuditLogService auditLog)
+            {
+                auditLog.Log("PlannedEntryCreated",
+                    $"Created planned entry on {result.Date:yyyy-MM-dd} {result.StartTime:HH\\:mm}-{result.EndTime:HH\\:mm} (via week-view drag)",
+                    new { plannedEntry = result });
+            }
             vm.Load(vm.WeekStart);
         }
 
@@ -192,6 +198,40 @@ public partial class WeekView : UserControl
 
     private void DayHeader_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
     {
+    }
+
+    private void EntryBlock_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        e.Handled = true;
+    }
+
+    private void EntryBlock_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+    {
+        if (sender is FrameworkElement fe && fe.Tag is Guid id
+            && DataContext is WeekViewModel vm)
+        {
+            vm.EditEntry(id);
+            e.Handled = true;
+        }
+    }
+
+    private void EntryBlock_Edit_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is MenuItem mi && mi.Tag is Guid id
+            && DataContext is WeekViewModel vm)
+        {
+            vm.EditEntry(id);
+        }
+    }
+
+    private void EntryBlock_Delete_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is MenuItem mi && mi.Tag is Guid id
+            && DataContext is WeekViewModel vm)
+        {
+            if (MessageDialog.ShowConfirm("Confirm delete", "Delete this planned entry?"))
+                vm.DeleteEntry(id);
+        }
     }
 
     private void AddDayEvent_Click(object sender, RoutedEventArgs e)

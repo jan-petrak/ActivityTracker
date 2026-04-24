@@ -51,12 +51,48 @@
                 <DockPanel>
                     <DockPanel DockPanel.Dock="Top" Margin="0,0,0,16">
                         <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
-                            <Button Content="Edit" Style="{StaticResource SecondaryButtonStyle}" Margin="0,0,6,0"
-                                    Command="{Binding EditGroupCommand}"
-                                    Visibility="{Binding SelectedGroup, Converter={StaticResource NotNullToVisibleConverter}, FallbackValue=Collapsed}"/>
-                            <Button Content="Delete" Style="{StaticResource DangerButtonStyle}"
-                                    Command="{Binding DeleteGroupCommand}"
-                                    Visibility="{Binding SelectedGroup, Converter={StaticResource NotNullToVisibleConverter}, FallbackValue=Collapsed}"/>
+                            <!-- Activity actions (shown when an activity is selected) -->
+                            <Button Content="Edit Activity" Style="{StaticResource SecondaryButtonStyle}" Margin="0,0,6,0"
+                                    Command="{Binding EditActivityCommand}"
+                                    Visibility="{Binding SelectedActivity, Converter={StaticResource NotNullToVisibleConverter}, FallbackValue=Collapsed}"/>
+                            <Button Content="Delete Activity" Style="{StaticResource DangerButtonStyle}"
+                                    Command="{Binding DeleteActivityCommand}"
+                                    Visibility="{Binding SelectedActivity, Converter={StaticResource NotNullToVisibleConverter}, FallbackValue=Collapsed}"/>
+                            <!-- Group actions (shown only when a group is selected and no activity under it is selected) -->
+                            <Button Content="Edit Group" Margin="0,0,6,0"
+                                    Command="{Binding EditGroupCommand}">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource SecondaryButtonStyle}">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding SelectedGroup, Converter={StaticResource NotNullToBoolConverter}}" Value="True"/>
+                                                    <Condition Binding="{Binding SelectedActivity, Converter={StaticResource NotNullToBoolConverter}}" Value="False"/>
+                                                </MultiDataTrigger.Conditions>
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </MultiDataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                            <Button Content="Delete Group"
+                                    Command="{Binding DeleteGroupCommand}">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource DangerButtonStyle}">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding SelectedGroup, Converter={StaticResource NotNullToBoolConverter}}" Value="True"/>
+                                                    <Condition Binding="{Binding SelectedActivity, Converter={StaticResource NotNullToBoolConverter}}" Value="False"/>
+                                                </MultiDataTrigger.Conditions>
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </MultiDataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
                         </StackPanel>
                         <TextBlock FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center"
                                    Foreground="{StaticResource TextPrimary}">

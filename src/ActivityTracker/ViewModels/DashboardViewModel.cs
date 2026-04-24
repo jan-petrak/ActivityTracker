@@ -29,6 +29,7 @@ public partial class DashboardViewModel : ObservableObject
     private readonly INavigationService _navigationService;
     private readonly IDataService _dataService;
     private readonly IDialogService _dialogService;
+    private readonly IAuditLogService _auditLog;
 
     [ObservableProperty]
     private ObservableCollection<CalendarEntryItem> todaySchedule = [];
@@ -53,13 +54,15 @@ public partial class DashboardViewModel : ObservableObject
         IStatisticsService statisticsService,
         INavigationService navigationService,
         IDataService dataService,
-        IDialogService dialogService)
+        IDialogService dialogService,
+        IAuditLogService auditLog)
     {
         _calendarService = calendarService;
         _statisticsService = statisticsService;
         _navigationService = navigationService;
         _dataService = dataService;
         _dialogService = dialogService;
+        _auditLog = auditLog;
         Refresh();
     }
 
@@ -99,22 +102,30 @@ public partial class DashboardViewModel : ObservableObject
     {
         var existing = _dataService.Data.DayEvents.FirstOrDefault(d => d.Id == sourceId);
         if (existing == null) return;
-
+        var before = AuditSnapshots.Clone(existing);
         if (_dialogService.ShowDayEventEditor(existing, out var result))
         {
             var idx = _dataService.Data.DayEvents.FindIndex(d => d.Id == sourceId);
             if (idx >= 0) _dataService.Data.DayEvents[idx] = result;
             _dataService.NotifyChanged();
+            _auditLog.Log("DayEventUpdated",
+                $"Updated whole-day event '{result.Title}' on {result.Date:yyyy-MM-dd}",
+                new { dayEventId = sourceId, before, after = result });
             Refresh();
         }
     }
 
     public void DeleteDayEvent(Guid sourceId)
     {
+        var existing = _dataService.Data.DayEvents.FirstOrDefault(d => d.Id == sourceId);
+        if (existing == null) return;
         var removed = _dataService.Data.DayEvents.RemoveAll(d => d.Id == sourceId);
         if (removed > 0)
         {
             _dataService.NotifyChanged();
+            _auditLog.Log("DayEventDeleted",
+                $"Deleted whole-day event '{existing.Title}' on {existing.Date:yyyy-MM-dd}",
+                new { dayEvent = existing });
             Refresh();
         }
     }

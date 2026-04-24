@@ -67,12 +67,24 @@
                                 <ItemsControl ItemsSource="{Binding Entries}" MaxHeight="60">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
-                                            <TextBlock Text="{Binding Summary}" FontSize="9"
-                                                       TextTrimming="CharacterEllipsis" Margin="0,1">
-                                                <TextBlock.Foreground>
-                                                    <Binding Path="Color" Converter="{StaticResource StringToBrushConverter}"/>
-                                                </TextBlock.Foreground>
-                                            </TextBlock>
+                                            <Border Background="Transparent" Cursor="Hand"
+                                                    Tag="{Binding SourceId}" Margin="0,1"
+                                                    MouseLeftButtonUp="EntryRow_MouseLeftButtonUp">
+                                                <Border.ContextMenu>
+                                                    <ContextMenu>
+                                                        <MenuItem Header="Edit" Click="EntryRow_Edit_Click"
+                                                                  Tag="{Binding SourceId}"/>
+                                                        <MenuItem Header="Delete" Click="EntryRow_Delete_Click"
+                                                                  Tag="{Binding SourceId}"/>
+                                                    </ContextMenu>
+                                                </Border.ContextMenu>
+                                                <TextBlock Text="{Binding Summary}" FontSize="9"
+                                                           TextTrimming="CharacterEllipsis">
+                                                    <TextBlock.Foreground>
+                                                        <Binding Path="Color" Converter="{StaticResource StringToBrushConverter}"/>
+                                                    </TextBlock.Foreground>
+                                                </TextBlock>
+                                            </Border>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>

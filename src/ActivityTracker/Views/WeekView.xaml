@@ -179,10 +179,21 @@
                                             </ItemsControl.ItemsPanel>
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate>
-                                                    <Border CornerRadius="4" Padding="4,2" Margin="2,0">
+                                                    <Border CornerRadius="4" Padding="4,2" Margin="2,0"
+                                                            Cursor="Hand" Tag="{Binding SourceId}"
+                                                            MouseLeftButtonDown="EntryBlock_MouseLeftButtonDown"
+                                                            MouseLeftButtonUp="EntryBlock_MouseLeftButtonUp">
                                                         <Border.Background>
                                                             <Binding Path="Color" Converter="{StaticResource StringToBrushConverter}"/>
                                                         </Border.Background>
+                                                        <Border.ContextMenu>
+                                                            <ContextMenu>
+                                                                <MenuItem Header="Edit" Click="EntryBlock_Edit_Click"
+                                                                          Tag="{Binding SourceId}"/>
+                                                                <MenuItem Header="Delete" Click="EntryBlock_Delete_Click"
+                                                                          Tag="{Binding SourceId}"/>
+                                                            </ContextMenu>
+                                                        </Border.ContextMenu>
                                                         <TextBlock Foreground="White" FontSize="10"
                                                                    TextTrimming="CharacterEllipsis" TextWrapping="Wrap">
                                                             <Run Text="{Binding ActivityName}" FontWeight="SemiBold"/>

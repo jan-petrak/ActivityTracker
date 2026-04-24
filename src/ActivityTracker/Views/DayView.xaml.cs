@@ -166,6 +166,12 @@ public partial class DayView : UserControl
         {
             dataService.Data.PlannedEntries.Add(result);
             dataService.NotifyChanged();
+            if (App.Services.GetService(typeof(IAuditLogService)) is IAuditLogService auditLog)
+            {
+                auditLog.Log("PlannedEntryCreated",
+                    $"Created planned entry on {result.Date:yyyy-MM-dd} {result.StartTime:HH\\:mm}-{result.EndTime:HH\\:mm} (via day-view drag)",
+                    new { plannedEntry = result });
+            }
             vm.Load(vm.Date);
         }
     }
@@ -182,6 +188,35 @@ public partial class DayView : UserControl
     private void EntryBlock_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
         e.Handled = true;
+    }
+
+    private void EntryBlock_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+    {
+        if (sender is FrameworkElement fe && fe.Tag is Guid id
+            && DataContext is DayViewModel vm)
+        {
+            vm.EditEntry(id);
+            e.Handled = true;
+        }
+    }
+
+    private void EntryBlock_Edit_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is MenuItem mi && mi.Tag is Guid id
+            && DataContext is DayViewModel vm)
+        {
+            vm.EditEntry(id);
+        }
+    }
+
+    private void EntryBlock_Delete_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is MenuItem mi && mi.Tag is Guid id
+            && DataContext is DayViewModel vm)
+        {
+            if (MessageDialog.ShowConfirm("Confirm delete", "Delete this planned entry?"))
+                vm.DeleteEntry(id);
+        }
     }
 
     private void DateHeader_MouseRightButtonUp(object sender, MouseButtonEventArgs e)

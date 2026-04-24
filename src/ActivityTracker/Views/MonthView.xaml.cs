@@ -100,4 +100,33 @@ public partial class MonthView : UserControl
         if (MessageDialog.ShowConfirm("Confirm delete", "Delete this whole-day event?"))
             vm.DeleteDayEvent(id);
     }
+
+    private void EntryRow_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+    {
+        if (sender is FrameworkElement fe && fe.Tag is Guid id
+            && DataContext is MonthViewModel vm)
+        {
+            vm.EditEntry(id);
+            e.Handled = true;
+        }
+    }
+
+    private void EntryRow_Edit_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is MenuItem mi && mi.Tag is Guid id
+            && DataContext is MonthViewModel vm)
+        {
+            vm.EditEntry(id);
+        }
+    }
+
+    private void EntryRow_Delete_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is MenuItem mi && mi.Tag is Guid id
+            && DataContext is MonthViewModel vm)
+        {
+            if (MessageDialog.ShowConfirm("Confirm delete", "Delete this planned entry?"))
+                vm.DeleteEntry(id);
+        }
+    }
 }

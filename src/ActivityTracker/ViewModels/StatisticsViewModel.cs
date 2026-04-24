@@ -10,6 +10,7 @@ public partial class StatisticsViewModel : ObservableObject
     private readonly IStatisticsService _statisticsService;
     private readonly IDataService _dataService;
     private readonly IDialogService _dialogService;
+    private readonly IAuditLogService _auditLog;
 
     [ObservableProperty]
     private string periodSelection = "LastMonth";
@@ -35,11 +36,12 @@ public partial class StatisticsViewModel : ObservableObject
     [ObservableProperty]
     private ObservableCollection<HourDistributionItem> hourDistribution = [];
 
-    public StatisticsViewModel(IStatisticsService statisticsService, IDataService dataService, IDialogService dialogService)
+    public StatisticsViewModel(IStatisticsService statisticsService, IDataService dataService, IDialogService dialogService, IAuditLogService auditLog)
     {
         _statisticsService = statisticsService;
         _dataService = dataService;
         _dialogService = dialogService;
+        _auditLog = auditLog;
         SelectPeriod("LastMonth");
     }
 
@@ -80,6 +82,9 @@ public partial class StatisticsViewModel : ObservableObject
         {
             _dataService.Data.Goals.Add(goal);
             _dataService.NotifyChanged();
+            _auditLog.Log("GoalCreated",
+                $"Created goal for group id {goal.GroupId}",
+                new { goal });
             Refresh();
         }
     }

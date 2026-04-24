@@ -22,6 +22,7 @@ public partial class App : Application
         services.AddSingleton<ICalendarService, CalendarService>();
         services.AddSingleton<IStatisticsService, StatisticsService>();
         services.AddSingleton<IDialogService, DialogService>();
+        services.AddSingleton<IAuditLogService, AuditLogService>();
 
         // ViewModels
         services.AddTransient<MainViewModel>();

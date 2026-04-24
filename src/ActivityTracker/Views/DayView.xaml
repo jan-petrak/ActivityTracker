@@ -116,11 +116,20 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Border CornerRadius="6" Padding="10,6" Margin="0,0,16,0"
-                                    MinWidth="200" Cursor="Hand"
-                                    MouseLeftButtonDown="EntryBlock_MouseLeftButtonDown">
+                                    MinWidth="200" Cursor="Hand" Tag="{Binding SourceId}"
+                                    MouseLeftButtonDown="EntryBlock_MouseLeftButtonDown"
+                                    MouseLeftButtonUp="EntryBlock_MouseLeftButtonUp">
                                 <Border.Background>
                                     <Binding Path="Color" Converter="{StaticResource StringToBrushConverter}"/>
                                 </Border.Background>
+                                <Border.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Edit" Click="EntryBlock_Edit_Click"
+                                                  Tag="{Binding SourceId}"/>
+                                        <MenuItem Header="Delete" Click="EntryBlock_Delete_Click"
+                                                  Tag="{Binding SourceId}"/>
+                                    </ContextMenu>
+                                </Border.ContextMenu>
                                 <StackPanel>
                                     <TextBlock Foreground="White" FontWeight="SemiBold" FontSize="12">
                                         <Run Text="{Binding GroupName}"/>
