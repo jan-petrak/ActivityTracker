@@ -44,36 +44,47 @@
                             </Style>
                         </Border.Style>
                         <Grid>
-                            <StackPanel>
-                                <TextBlock Text="{Binding DayNumber}" FontWeight="SemiBold" FontSize="13" Margin="0,0,0,4">
-                                    <TextBlock.Style>
-                                        <Style TargetType="TextBlock">
-                                            <Setter Property="Foreground" Value="{StaticResource TextSecondary}"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding IsToday}" Value="True">
-                                                    <Setter Property="Foreground" Value="{StaticResource AccentAmber}"/>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </TextBlock.Style>
-                                </TextBlock>
-                                <ItemsControl ItemsSource="{Binding Entries}" MaxHeight="60">
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding Summary}" FontSize="9"
-                                                       TextTrimming="CharacterEllipsis" Margin="0,1">
-                                                <TextBlock.Foreground>
-                                                    <Binding Path="Color" Converter="{StaticResource StringToBrushConverter}"/>
-                                                </TextBlock.Foreground>
-                                            </TextBlock>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-                                <TextBlock FontSize="9" Foreground="{StaticResource TextMuted}" Margin="0,2,0,0"
-                                           Visibility="{Binding TotalHours, Converter={StaticResource NonZeroToVisibleConverter}, FallbackValue=Collapsed}">
-                                    <Run Text="{Binding TotalHours, StringFormat='{}{0:0.#}h'}"/>
-                                </TextBlock>
-                            </StackPanel>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,4">
+                                    <TextBlock Text="{Binding DayNumber}" FontWeight="SemiBold" FontSize="13">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Foreground" Value="{StaticResource TextSecondary}"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsToday}" Value="True">
+                                                        <Setter Property="Foreground" Value="{StaticResource AccentAmber}"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                    <TextBlock FontSize="9" Foreground="{StaticResource TextMuted}"
+                                               Margin="4,0,0,0" VerticalAlignment="Center"
+                                               Visibility="{Binding TotalHours, Converter={StaticResource NonZeroToVisibleConverter}, FallbackValue=Collapsed}">
+                                        <Run Text="{Binding TotalHours, StringFormat='[{0:0.#}h]'}"/>
+                                    </TextBlock>
+                                </StackPanel>
+                                <ScrollViewer Grid.Row="1"
+                                              VerticalScrollBarVisibility="Hidden"
+                                              HorizontalScrollBarVisibility="Disabled">
+                                    <ItemsControl ItemsSource="{Binding Entries}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Summary}" FontSize="9"
+                                                           TextTrimming="CharacterEllipsis" Margin="0,1">
+                                                    <TextBlock.Foreground>
+                                                        <Binding Path="Color" Converter="{StaticResource StringToBrushConverter}"/>
+                                                    </TextBlock.Foreground>
+                                                </TextBlock>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </ScrollViewer>
+                            </Grid>
                             <Path HorizontalAlignment="Right" VerticalAlignment="Top"
                                   Data="{StaticResource DayEventIconGeometry}"
                                   Stroke="{StaticResource AccentAmber}" StrokeThickness="1.2"
