@@ -15,7 +15,8 @@ public static class PlannedEntryRescheduler
         TimeOnly newEnd,
         RecurrenceEditScope scope)
     {
-        if (newEnd <= newStart) return false;
+        var isMidnightEnd = newEnd == TimeOnly.MinValue && newStart > TimeOnly.MinValue;
+        if (!isMidnightEnd && newEnd <= newStart) return false;
 
         var isRecurring = entry.Recurrence != null;
         var unchanged = newDate == occurrenceDate

@@ -2,14 +2,15 @@
   "permissions": {
     "allow": [
       "Bash(dotnet:*)",
-      "WebSearch",
       "mcp__plugin_context7_context7__resolve-library-id",
       "mcp__plugin_context7_context7__query-docs",
       "Bash(mkdir:*)",
       "Bash(powershell -ExecutionPolicy Bypass -File ./generate-icon.ps1)",
       "mcp__serena__get_symbols_overview",
       "mcp__serena__find_symbol",
-      "Bash(tasklist *)"
+      "Bash(tasklist *)",
+      "mcp__serena__check_onboarding_performed",
+      "mcp__serena__initial_instructions"
     ]
   }
 }

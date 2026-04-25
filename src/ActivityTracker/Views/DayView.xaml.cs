@@ -80,9 +80,10 @@ public partial class DayView : UserControl
             if (container.ItemContainerGenerator.ContainerFromIndex(i) is ContentPresenter cp
                 && container.Items[i] is CalendarEntryItem entry)
             {
-                var top = entry.StartTime.Hour * 60 + entry.StartTime.Minute;
-                var height = (entry.EndTime.ToTimeSpan() - entry.StartTime.ToTimeSpan()).TotalMinutes;
-                Canvas.SetTop(cp, top);
+                var startMin = entry.StartTime.Hour * 60 + entry.StartTime.Minute;
+                var endMin = entry.EndTime == TimeOnly.MinValue ? 24 * 60 : (entry.EndTime.Hour * 60 + entry.EndTime.Minute);
+                var height = endMin - startMin;
+                Canvas.SetTop(cp, startMin);
                 cp.Height = Math.Max(height, 20);
             }
         }
@@ -103,8 +104,8 @@ public partial class DayView : UserControl
 
     private static TimeOnly MinutesToTime(int minutes)
     {
-        minutes = Math.Clamp(minutes, 0, 23 * 60 + 59);
-        return new TimeOnly(minutes / 60, minutes % 60);
+        if (minutes >= 24 * 60) return new TimeOnly(0, 0);
+        return new TimeOnly(Math.Max(minutes, 0) / 60, Math.Max(minutes, 0) % 60);
     }
 
     // --- Drag to create ---

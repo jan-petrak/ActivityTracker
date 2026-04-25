@@ -88,7 +88,8 @@ public partial class PlannedEntryEditorDialog : Window
             return;
         }
 
-        if (endTime <= startTime)
+        var isMidnightEnd = endTime == TimeOnly.MinValue && startTime > TimeOnly.MinValue;
+        if (!isMidnightEnd && endTime <= startTime)
         {
             MessageDialog.ShowInfo("Validation", "End time must be after start time.");
             return;
