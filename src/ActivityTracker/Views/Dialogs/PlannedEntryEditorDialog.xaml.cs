@@ -30,16 +30,15 @@ public partial class PlannedEntryEditorDialog : Window
             {
                 Id = existing.Id,
                 ActivityId = existing.ActivityId,
-                Date = existing.Date,
-                StartTime = existing.StartTime,
-                EndTime = existing.EndTime,
+                Start = existing.Start,
+                End = existing.End,
                 Recurrence = existing.Recurrence,
                 Notes = existing.Notes
             };
 
             DateBox.Text = existing.Date.ToString("yyyy-MM-dd");
-            StartTimeBox.Text = existing.StartTime.ToString("HH:mm");
-            EndTimeBox.Text = existing.EndTime.ToString("HH:mm");
+            StartTimeBox.Text = existing.Start.ToString("HH:mm");
+            EndTimeBox.Text = existing.End.ToString("HH:mm");
             NotesBox.Text = existing.Notes ?? string.Empty;
             ActivityCombo.SelectedValue = existing.ActivityId;
 
@@ -88,17 +87,20 @@ public partial class PlannedEntryEditorDialog : Window
             return;
         }
 
-        var isMidnightEnd = endTime == TimeOnly.MinValue && startTime > TimeOnly.MinValue;
-        if (!isMidnightEnd && endTime <= startTime)
+        // end time < start time means the entry crosses midnight into the next day
+        var start = date.Date + startTime.ToTimeSpan();
+        var endDate = endTime <= startTime ? date.Date.AddDays(1) : date.Date;
+        var end = endDate + endTime.ToTimeSpan();
+
+        if (end <= start)
         {
             MessageDialog.ShowInfo("Validation", "End time must be after start time.");
             return;
         }
 
         Result.ActivityId = activityId;
-        Result.Date = DateOnly.FromDateTime(date);
-        Result.StartTime = startTime;
-        Result.EndTime = endTime;
+        Result.Start = start;
+        Result.End = end;
         Result.Notes = string.IsNullOrWhiteSpace(NotesBox.Text) ? null : NotesBox.Text.Trim();
 
         if (RecurringCheck.IsChecked == true)

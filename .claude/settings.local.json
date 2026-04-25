@@ -10,7 +10,8 @@
       "mcp__serena__find_symbol",
       "Bash(tasklist *)",
       "mcp__serena__check_onboarding_performed",
-      "mcp__serena__initial_instructions"
+      "mcp__serena__initial_instructions",
+      "Bash(Select-String *)"
     ]
   }
 }

@@ -65,7 +65,7 @@
                                     <TextBlock FontSize="9" Foreground="{StaticResource TextMuted}"
                                                Margin="4,0,0,0" VerticalAlignment="Center"
                                                Visibility="{Binding TotalHours, Converter={StaticResource NonZeroToVisibleConverter}, FallbackValue=Collapsed}">
-                                        <Run Text="{Binding TotalHours, StringFormat='[{0:0.#}h]'}"/>
+                                        <Run Text="{Binding TotalHours, StringFormat='[{0:0.00}h]'}"/>
                                     </TextBlock>
                                 </StackPanel>
                                 <ScrollViewer Grid.Row="1"

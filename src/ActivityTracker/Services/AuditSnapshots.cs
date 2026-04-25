@@ -10,9 +10,8 @@ internal static class AuditSnapshots
     {
         Id = e.Id,
         ActivityId = e.ActivityId,
-        Date = e.Date,
-        StartTime = e.StartTime,
-        EndTime = e.EndTime,
+        Start = e.Start,
+        End = e.End,
         Recurrence = e.Recurrence,
         Notes = e.Notes
     };

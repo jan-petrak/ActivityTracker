@@ -16,7 +16,8 @@ public class StatisticsService : IStatisticsService
     public StatsSummary CalculateForRange(DateOnly start, DateOnly end)
     {
         var data = _dataService.Data;
-        var entries = _calendarService.GetEntriesForRange(start, end);
+        var allEntries = _calendarService.GetEntriesForRange(start, end);
+        var entries = allEntries.Where(e => !e.IsContinuation).ToList();
         var totalDays = (end.ToDateTime(TimeOnly.MinValue) - start.ToDateTime(TimeOnly.MinValue)).Days + 1;
 
         var groupSummaries = new List<GroupSummary>();
@@ -43,12 +44,13 @@ public class StatisticsService : IStatisticsService
         var hourDist = Enumerable.Range(0, 24).Select(h => new HourDistributionItem { Hour = h }).ToList();
         foreach (var entry in entries)
         {
-            var startMinute = entry.StartTime.Hour * 60 + entry.StartTime.Minute;
-            var endMinute = EntryEndMinute(entry);
+            var startMinute = (int)entry.Start.TimeOfDay.TotalMinutes;
+            // Clip to midnight for cross-midnight entries (after-midnight portion belongs to next day)
+            var endMinute = DateOnly.FromDateTime(entry.End) > DateOnly.FromDateTime(entry.Start)
+                ? 24 * 60
+                : (int)entry.End.TimeOfDay.TotalMinutes;
             for (var m = startMinute; m < endMinute; m++)
-            {
                 hourDist[m / 60].TotalMinutes++;
-            }
         }
 
         return new StatsSummary
@@ -76,7 +78,7 @@ public class StatisticsService : IStatisticsService
                 : [.. group.Activities.Select(a => a.Id)];
 
             var hours = _calendarService.GetEntriesForRange(start, end)
-                .Where(e => activityIds.Contains(e.ActivityId))
+                .Where(e => !e.IsContinuation && activityIds.Contains(e.ActivityId))
                 .Sum(EntryHours);
 
             var activityName = goal.ActivityId.HasValue
@@ -99,11 +101,9 @@ public class StatisticsService : IStatisticsService
         return results;
     }
 
-    private static int EntryEndMinute(CalendarEntryItem e) =>
-        e.EndTime == TimeOnly.MinValue ? 24 * 60 : e.EndTime.Hour * 60 + e.EndTime.Minute;
+    private static double EntryHours(CalendarEntryItem e) => (e.End - e.Start).TotalHours;
 
-    private static double EntryHours(CalendarEntryItem e) =>
-        (EntryEndMinute(e) - (e.StartTime.Hour * 60 + e.StartTime.Minute)) / 60.0;
+    
 
     private static (DateOnly Start, DateOnly End) GetGoalPeriodRange(GoalPeriod period, DateOnly reference)
     {

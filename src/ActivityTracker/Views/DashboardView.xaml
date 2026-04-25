@@ -165,7 +165,7 @@
                     <StackPanel>
                         <TextBlock Text="THIS WEEK" Style="{StaticResource CardHeader}"/>
                         <TextBlock FontSize="42" FontWeight="Light" Foreground="{StaticResource AccentAmber}">
-                            <Run Text="{Binding WeeklyHoursLogged, StringFormat='{}{0:0.#}'}"/>
+                            <Run Text="{Binding WeeklyHoursLogged, StringFormat='{}{0:0.00}'}"/>
                             <Run Text="h" FontSize="20" Foreground="{StaticResource TextMuted}"/>
                         </TextBlock>
                         <TextBlock Text="hours logged" Foreground="{StaticResource TextMuted}" Margin="0,0,0,16"/>
@@ -173,7 +173,7 @@
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <DockPanel Margin="0,4">
-                                        <TextBlock Text="{Binding TotalHours, StringFormat='{}{0:0.#}h'}"
+                                        <TextBlock Text="{Binding TotalHours, StringFormat='{}{0:0.00}h'}"
                                                    DockPanel.Dock="Right" Foreground="{StaticResource TextSecondary}"
                                                    Width="44" TextAlignment="Right"/>
                                         <Border Height="22" CornerRadius="6" Margin="0,0,10,0"
@@ -203,9 +203,9 @@
                                                        TextTrimming="CharacterEllipsis"/>
                                             <TextBlock DockPanel.Dock="Right" FontSize="12"
                                                        Foreground="{StaticResource TextSecondary}">
-                                                <Run Text="{Binding ActualHours, StringFormat='{}{0:0.#}'}"/>
+                                                <Run Text="{Binding ActualHours, StringFormat='{}{0:0.00}'}"/>
                                                 <Run Text="/" Foreground="{StaticResource TextMuted}"/>
-                                                <Run Text="{Binding TargetHours, StringFormat='{}{0:0.#}h'}"/>
+                                                <Run Text="{Binding TargetHours, StringFormat='{}{0:0.00}h'}"/>
                                             </TextBlock>
                                         </DockPanel>
                                         <Border Height="6" CornerRadius="3"

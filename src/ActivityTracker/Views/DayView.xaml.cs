@@ -80,11 +80,16 @@ public partial class DayView : UserControl
             if (container.ItemContainerGenerator.ContainerFromIndex(i) is ContentPresenter cp
                 && container.Items[i] is CalendarEntryItem entry)
             {
-                var startMin = entry.StartTime.Hour * 60 + entry.StartTime.Minute;
-                var endMin = entry.EndTime == TimeOnly.MinValue ? 24 * 60 : (entry.EndTime.Hour * 60 + entry.EndTime.Minute);
-                var height = endMin - startMin;
+                var startMin = (int)entry.Start.TimeOfDay.TotalMinutes;
+                int endMin;
+                if (entry.IsContinuation)
+                    endMin = (int)entry.End.TimeOfDay.TotalMinutes;
+                else
+                    endMin = DateOnly.FromDateTime(entry.End) > DateOnly.FromDateTime(entry.Start)
+                        ? 24 * 60
+                        : (int)entry.End.TimeOfDay.TotalMinutes;
                 Canvas.SetTop(cp, startMin);
-                cp.Height = Math.Max(height, 20);
+                cp.Height = Math.Max(endMin - startMin, 20);
             }
         }
     }
@@ -102,10 +107,11 @@ public partial class DayView : UserControl
         return Math.Clamp(snapped, 0, 24 * 60);
     }
 
-    private static TimeOnly MinutesToTime(int minutes)
+    private static DateTime MinutesToDateTime(DateOnly date, int minutes)
     {
-        if (minutes >= 24 * 60) return new TimeOnly(0, 0);
-        return new TimeOnly(Math.Max(minutes, 0) / 60, Math.Max(minutes, 0) % 60);
+        if (minutes >= 24 * 60)
+            return date.AddDays(1).ToDateTime(new TimeOnly(0, 0));
+        return date.ToDateTime(new TimeOnly(Math.Max(minutes, 0) / 60, Math.Max(minutes, 0) % 60));
     }
 
     // --- Drag to create ---
@@ -165,19 +171,13 @@ public partial class DayView : UserControl
         var topMin = Math.Min(startMin, endMin);
         var bottomMin = Math.Max(startMin, endMin);
 
-        var startTime = MinutesToTime(topMin);
-        var endTime = MinutesToTime(bottomMin);
+        var start = MinutesToDateTime(vm.Date, topMin);
+        var end = MinutesToDateTime(vm.Date, bottomMin);
 
         if (App.Services.GetService(typeof(IDataService)) is not IDataService dataService) return;
         if (App.Services.GetService(typeof(IDialogService)) is not IDialogService dialogService) return;
 
-        // Create a PlannedEntry via drag
-        var planned = new Models.PlannedEntry
-        {
-            Date = vm.Date,
-            StartTime = startTime,
-            EndTime = endTime
-        };
+        var planned = new Models.PlannedEntry { Start = start, End = end };
 
         if (dialogService.ShowPlannedEntryEditor(dataService.Data.Groups, null, planned, out var result))
         {
@@ -186,7 +186,7 @@ public partial class DayView : UserControl
             if (App.Services.GetService(typeof(IAuditLogService)) is IAuditLogService auditLog)
             {
                 auditLog.Log("PlannedEntryCreated",
-                    $"Created planned entry on {result.Date:yyyy-MM-dd} {result.StartTime:HH\\:mm}-{result.EndTime:HH\\:mm} (via day-view drag)",
+                    $"Created planned entry on {result.Date:yyyy-MM-dd} {result.Start:HH\\:mm}-{result.End:HH\\:mm} (via day-view drag)",
                     new { plannedEntry = result });
             }
             vm.Load(vm.Date);
@@ -197,9 +197,10 @@ public partial class DayView : UserControl
     {
         var startMin = (int)(topPx / PixelsPerMinute);
         var endMin = (int)(bottomPx / PixelsPerMinute);
-        var s = MinutesToTime(startMin);
-        var en = MinutesToTime(endMin);
-        DragPreviewText.Text = $"{s:HH:mm} – {en:HH:mm}  (drag to plan)";
+        var s = new TimeOnly(startMin / 60, startMin % 60);
+        var en = endMin >= 24 * 60 ? new TimeOnly(0, 0) : new TimeOnly(endMin / 60, endMin % 60);
+        var suffix = endMin >= 24 * 60 ? " +1d" : string.Empty;
+        DragPreviewText.Text = $"{s:HH:mm} – {en:HH:mm}{suffix}  (drag to plan)";
     }
 
     private void EntryBlock_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -318,8 +319,8 @@ public partial class DayView : UserControl
 
         var newTop = Canvas.GetTop(presenter);
         var newHeight = presenter.Height;
-        var newStart = MinutesToTime((int)Math.Round(newTop));
-        var newEnd = MinutesToTime((int)Math.Round(newTop + newHeight));
+        var newStart = MinutesToDateTime(vm.Date, (int)Math.Round(newTop));
+        var newEnd = MinutesToDateTime(vm.Date, (int)Math.Round(newTop + newHeight));
 
         if (!vm.Reschedule(id, newStart, newEnd))
         {

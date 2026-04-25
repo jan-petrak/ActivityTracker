@@ -82,7 +82,8 @@ public partial class MonthViewModel : ObservableObject
         for (var i = 0; i < 42; i++)
         {
             var day = gridStart.AddDays(i);
-            var dayEntries = allEntries.Where(e => e.Date == day).ToList();
+            // Exclude continuation items from month view — they belong to the start date
+            var dayEntries = allEntries.Where(e => e.Date == day && !e.IsContinuation).ToList();
             var dayDayEvents = allDayEvents.Where(e => e.Date == day).ToList();
             cells.Add(new MonthDayCell
             {
@@ -154,7 +155,7 @@ public partial class MonthViewModel : ObservableObject
             if (idx >= 0) _dataService.Data.PlannedEntries[idx] = result;
             _dataService.NotifyChanged();
             _auditLog.Log("PlannedEntryUpdated",
-                $"Updated planned entry on {result.Date:yyyy-MM-dd} {result.StartTime:HH\\:mm}-{result.EndTime:HH\\:mm}",
+                $"Updated planned entry on {result.Date:yyyy-MM-dd} {result.Start:HH\\:mm}-{result.End:HH\\:mm}",
                 new { plannedEntryId = sourceId, before, after = result });
             Load(_referenceDate);
         }
@@ -168,7 +169,7 @@ public partial class MonthViewModel : ObservableObject
         {
             _dataService.NotifyChanged();
             _auditLog.Log("PlannedEntryDeleted",
-                $"Deleted planned entry on {existing.Date:yyyy-MM-dd} {existing.StartTime:HH\\:mm}-{existing.EndTime:HH\\:mm}",
+                $"Deleted planned entry on {existing.Date:yyyy-MM-dd} {existing.Start:HH\\:mm}-{existing.End:HH\\:mm}",
                 new { plannedEntry = existing });
             Load(_referenceDate);
         }

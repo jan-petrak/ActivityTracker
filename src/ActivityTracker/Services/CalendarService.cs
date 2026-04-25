@@ -24,38 +24,72 @@ public class CalendarService : ICalendarService
             .SelectMany(g => g.Activities.Select(a => (Group: g, Activity: a)))
             .ToDictionary(x => x.Activity.Id);
 
+        // Look one day before to catch cross-midnight continuations into range start
+        var queryStart = start.AddDays(-1);
+
         foreach (var pe in data.PlannedEntries)
         {
             if (!activityLookup.TryGetValue(pe.ActivityId, out var info)) continue;
 
-            IEnumerable<DateOnly> dates;
+            var duration = pe.End - pe.Start;
+            var startTod = pe.Start.TimeOfDay;
+
+            IEnumerable<DateOnly> occurrenceDates;
             if (pe.Recurrence != null)
             {
-                dates = _recurrenceService.ExpandOccurrences(pe.Recurrence, start, end);
+                occurrenceDates = _recurrenceService.ExpandOccurrences(pe.Recurrence, queryStart, end);
             }
             else
             {
-                dates = pe.Date >= start && pe.Date <= end ? [pe.Date] : [];
+                occurrenceDates = pe.Date >= queryStart && pe.Date <= end ? [pe.Date] : [];
             }
 
-            foreach (var date in dates)
+            foreach (var occDate in occurrenceDates)
             {
-                entries.Add(new CalendarEntryItem
+                var iStart = occDate.ToDateTime(TimeOnly.FromTimeSpan(startTod));
+                var iEnd = iStart + duration;
+                var iEndDate = DateOnly.FromDateTime(iEnd);
+
+                // Primary item: lives on occDate if in [start, end]
+                if (occDate >= start && occDate <= end)
                 {
-                    SourceId = pe.Id,
-                    ActivityName = info.Activity.Name,
-                    GroupName = info.Group.Name,
-                    Color = info.Group.Color,
-                    Date = date,
-                    StartTime = pe.StartTime,
-                    EndTime = pe.EndTime,
-                    Notes = pe.Notes,
-                    ActivityId = pe.ActivityId
-                });
+                    entries.Add(new CalendarEntryItem
+                    {
+                        SourceId = pe.Id,
+                        ActivityName = info.Activity.Name,
+                        GroupName = info.Group.Name,
+                        Color = info.Group.Color,
+                        Start = iStart,
+                        End = iEnd,
+                        IsContinuation = false,
+                        Notes = pe.Notes,
+                        ActivityId = pe.ActivityId
+                    });
+                }
+
+                // Continuation items: one per subsequent day in [start, end]
+                // Skip if end is exactly midnight — nothing to show on that day
+                for (var contDate = (occDate >= start ? occDate : start.AddDays(-1)).AddDays(1);
+                     contDate <= iEndDate && contDate <= end && (contDate < iEndDate || iEnd.TimeOfDay > TimeSpan.Zero);
+                     contDate = contDate.AddDays(1))
+                {
+                    entries.Add(new CalendarEntryItem
+                    {
+                        SourceId = pe.Id,
+                        ActivityName = info.Activity.Name,
+                        GroupName = info.Group.Name,
+                        Color = info.Group.Color,
+                        Start = contDate.ToDateTime(TimeOnly.MinValue),
+                        End = iEnd,
+                        IsContinuation = true,
+                        Notes = pe.Notes,
+                        ActivityId = pe.ActivityId
+                    });
+                }
             }
         }
 
-        return [.. entries.OrderBy(e => e.Date).ThenBy(e => e.StartTime)];
+        return [.. entries.OrderBy(e => e.Date).ThenBy(e => e.Start)];
     }
 
     public List<DayEventOccurrence> GetDayEventsForRange(DateOnly start, DateOnly end)

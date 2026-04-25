@@ -69,11 +69,16 @@ public partial class WeekView : UserControl
                 if (ic.ItemContainerGenerator.ContainerFromIndex(i) is ContentPresenter cp
                     && ic.Items[i] is CalendarEntryItem entry)
                 {
-                    var startMin = entry.StartTime.Hour * 60 + entry.StartTime.Minute;
-                    var endMin = entry.EndTime == TimeOnly.MinValue ? 24 * 60 : (entry.EndTime.Hour * 60 + entry.EndTime.Minute);
-                    var height = endMin - startMin;
+                    var startMin = (int)entry.Start.TimeOfDay.TotalMinutes;
+                    int endMin;
+                    if (entry.IsContinuation)
+                        endMin = (int)entry.End.TimeOfDay.TotalMinutes;
+                    else
+                        endMin = DateOnly.FromDateTime(entry.End) > DateOnly.FromDateTime(entry.Start)
+                            ? 24 * 60
+                            : (int)entry.End.TimeOfDay.TotalMinutes;
                     Canvas.SetTop(cp, startMin);
-                    cp.Height = Math.Max(height, 15);
+                    cp.Height = Math.Max(endMin - startMin, 15);
                 }
             }
         }), System.Windows.Threading.DispatcherPriority.Loaded);
@@ -86,10 +91,11 @@ public partial class WeekView : UserControl
         return Math.Clamp(snapped, 0, 24 * 60);
     }
 
-    private static TimeOnly MinutesToTime(int minutes)
+    private static DateTime MinutesToDateTime(DateOnly date, int minutes)
     {
-        if (minutes >= 24 * 60) return new TimeOnly(0, 0);
-        return new TimeOnly(Math.Max(minutes, 0) / 60, Math.Max(minutes, 0) % 60);
+        if (minutes >= 24 * 60)
+            return date.AddDays(1).ToDateTime(new TimeOnly(0, 0));
+        return date.ToDateTime(new TimeOnly(Math.Max(minutes, 0) / 60, Math.Max(minutes, 0) % 60));
     }
 
     private void WeekDragCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -163,7 +169,6 @@ public partial class WeekView : UserControl
             _dragPreview = null;
         }
 
-        // Determine which date this column represents
         if (canvas.Tag is not DateOnly date) return;
         if (DataContext is not WeekViewModel vm) return;
 
@@ -177,18 +182,13 @@ public partial class WeekView : UserControl
         var topMin = Math.Min(startMin, endMin);
         var bottomMin = Math.Max(startMin, endMin);
 
-        var startTime = MinutesToTime(topMin);
-        var endTime = MinutesToTime(bottomMin);
+        var start = MinutesToDateTime(date, topMin);
+        var end = MinutesToDateTime(date, bottomMin);
 
         if (App.Services.GetService(typeof(IDataService)) is not IDataService dataService) return;
         if (App.Services.GetService(typeof(IDialogService)) is not IDialogService dialogService) return;
 
-        var planned = new Models.PlannedEntry
-        {
-            Date = date,
-            StartTime = startTime,
-            EndTime = endTime
-        };
+        var planned = new Models.PlannedEntry { Start = start, End = end };
 
         if (dialogService.ShowPlannedEntryEditor(dataService.Data.Groups, null, planned, out var result))
         {
@@ -197,7 +197,7 @@ public partial class WeekView : UserControl
             if (App.Services.GetService(typeof(IAuditLogService)) is IAuditLogService auditLog)
             {
                 auditLog.Log("PlannedEntryCreated",
-                    $"Created planned entry on {result.Date:yyyy-MM-dd} {result.StartTime:HH\\:mm}-{result.EndTime:HH\\:mm} (via week-view drag)",
+                    $"Created planned entry on {result.Date:yyyy-MM-dd} {result.Start:HH\\:mm}-{result.End:HH\\:mm} (via week-view drag)",
                     new { plannedEntry = result });
             }
             vm.Load(vm.WeekStart);
@@ -211,9 +211,10 @@ public partial class WeekView : UserControl
         if (_dragPreview?.Child is not TextBlock tb) return;
         var startMin = (int)(topPx / PixelsPerMinute);
         var endMin = (int)(bottomPx / PixelsPerMinute);
-        var s = MinutesToTime(startMin);
-        var en = MinutesToTime(endMin);
-        tb.Text = $"{s:HH:mm}–{en:HH:mm}";
+        var s = new TimeOnly(startMin / 60, startMin % 60);
+        var en = endMin >= 24 * 60 ? new TimeOnly(0, 0) : new TimeOnly(endMin / 60, endMin % 60);
+        var suffix = endMin >= 24 * 60 ? "+1" : string.Empty;
+        tb.Text = $"{s:HH:mm}–{en:HH:mm}{suffix}";
     }
 
     private void DayHeader_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
@@ -334,9 +335,11 @@ public partial class WeekView : UserControl
 
                 Canvas.SetLeft(DragGhost, current.X + 12);
                 Canvas.SetTop(DragGhost, current.Y + 12);
+                var startTod = new TimeOnly(newStart / 60, newStart % 60);
+                var endTod = newEnd >= 24 * 60 ? new TimeOnly(0, 0) : new TimeOnly(newEnd / 60, newEnd % 60);
                 DragGhostText.Text = _entryCurrentDate != _entryDragSourceDate
-                    ? $"{_entryCurrentDate:ddd MMM d}  ·  {MinutesToTime(newStart):HH\\:mm}–{MinutesToTime(newEnd):HH\\:mm}"
-                    : $"{MinutesToTime(newStart):HH\\:mm}–{MinutesToTime(newEnd):HH\\:mm}";
+                    ? $"{_entryCurrentDate:ddd MMM d}  ·  {startTod:HH:mm}–{endTod:HH:mm}"
+                    : $"{startTod:HH:mm}–{endTod:HH:mm}";
                 break;
         }
     }
@@ -376,11 +379,11 @@ public partial class WeekView : UserControl
             return;
         }
 
-        var newStart = MinutesToTime(currentStartMin);
-        var newEnd = MinutesToTime(currentEndMin);
         var targetDate = mode == EntryDragMode.Move ? currentDate : sourceDate;
+        var newStart = MinutesToDateTime(targetDate, currentStartMin);
+        var newEnd = MinutesToDateTime(targetDate, currentEndMin);
 
-        var applied = vm.Reschedule(id, sourceDate, targetDate, newStart, newEnd);
+        var applied = vm.Reschedule(id, sourceDate, newStart, newEnd);
         if (!applied && (mode == EntryDragMode.ResizeTop || mode == EntryDragMode.ResizeBottom))
         {
             Canvas.SetTop(presenter, origStart);

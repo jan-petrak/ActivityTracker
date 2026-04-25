@@ -101,7 +101,7 @@ public partial class DayViewModel : ObservableObject
             if (idx >= 0) _dataService.Data.PlannedEntries[idx] = result;
             _dataService.NotifyChanged();
             _auditLog.Log("PlannedEntryUpdated",
-                $"Updated planned entry on {result.Date:yyyy-MM-dd} {result.StartTime:HH\\:mm}-{result.EndTime:HH\\:mm}",
+                $"Updated planned entry on {result.Date:yyyy-MM-dd} {result.Start:HH\\:mm}-{result.End:HH\\:mm}",
                 new { plannedEntryId = sourceId, before, after = result });
             Load(Date);
         }
@@ -115,13 +115,13 @@ public partial class DayViewModel : ObservableObject
         {
             _dataService.NotifyChanged();
             _auditLog.Log("PlannedEntryDeleted",
-                $"Deleted planned entry on {existing.Date:yyyy-MM-dd} {existing.StartTime:HH\\:mm}-{existing.EndTime:HH\\:mm}",
+                $"Deleted planned entry on {existing.Date:yyyy-MM-dd} {existing.Start:HH\\:mm}-{existing.End:HH\\:mm}",
                 new { plannedEntry = existing });
             Load(Date);
         }
     }
 
-    public bool Reschedule(Guid sourceId, TimeOnly newStart, TimeOnly newEnd)
+    public bool Reschedule(Guid sourceId, DateTime newStart, DateTime newEnd)
     {
         var entry = _dataService.Data.PlannedEntries.FirstOrDefault(p => p.Id == sourceId);
         if (entry == null) return false;
@@ -135,7 +135,7 @@ public partial class DayViewModel : ObservableObject
         }
 
         var applied = PlannedEntryRescheduler.TryReschedule(
-            _dataService, _auditLog, entry, Date, Date, newStart, newEnd, scope);
+            _dataService, _auditLog, entry, Date, newStart, newEnd, scope);
         if (applied) Load(Date);
         return applied;
     }

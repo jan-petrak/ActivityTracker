@@ -120,6 +120,16 @@
                                     MouseLeftButtonDown="EntryBlock_MouseLeftButtonDown"
                                     MouseLeftButtonUp="EntryBlock_MouseLeftButtonUp"
                                     MouseMove="EntryBlock_MouseMove">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Opacity" Value="1"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsContinuation}" Value="True">
+                                                <Setter Property="Opacity" Value="0.65"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
                                 <Border.Background>
                                     <Binding Path="Color" Converter="{StaticResource StringToBrushConverter}"/>
                                 </Border.Background>
@@ -137,9 +147,9 @@
                                     </TextBlock>
                                     <TextBlock Text="{Binding ActivityName}" Foreground="#FFFFFFDD" FontSize="11"/>
                                     <TextBlock Foreground="#FFFFFF99" FontSize="10">
-                                        <Run Text="{Binding StartTime, StringFormat='{}{0:HH:mm}'}"/>
+                                        <Run Text="{Binding Start, StringFormat='{}{0:HH:mm}'}"/>
                                         <Run Text=" – "/>
-                                        <Run Text="{Binding EndTime, StringFormat='{}{0:HH:mm}'}"/>
+                                        <Run Text="{Binding End, StringFormat='{}{0:HH:mm}'}"/>
                                     </TextBlock>
                                 </StackPanel>
                             </Border>

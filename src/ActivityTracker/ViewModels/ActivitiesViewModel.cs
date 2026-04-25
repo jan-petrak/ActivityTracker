@@ -165,7 +165,7 @@ public partial class ActivitiesViewModel : ObservableObject
             _dataService.Data.PlannedEntries.Add(entry);
             _dataService.NotifyChanged();
             _auditLog.Log("PlannedEntryCreated",
-                $"Created planned entry for activity '{SelectedActivity.Name}' on {entry.Date:yyyy-MM-dd} {entry.StartTime:HH\\:mm}-{entry.EndTime:HH\\:mm}",
+                $"Created planned entry for activity '{SelectedActivity.Name}' on {entry.Date:yyyy-MM-dd} {entry.Start:HH\\:mm}-{entry.End:HH\\:mm}",
                 new { plannedEntry = entry });
         }
     }

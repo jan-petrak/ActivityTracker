@@ -126,7 +126,7 @@ public partial class WeekViewModel : ObservableObject
             if (idx >= 0) _dataService.Data.PlannedEntries[idx] = result;
             _dataService.NotifyChanged();
             _auditLog.Log("PlannedEntryUpdated",
-                $"Updated planned entry on {result.Date:yyyy-MM-dd} {result.StartTime:HH\\:mm}-{result.EndTime:HH\\:mm}",
+                $"Updated planned entry on {result.Date:yyyy-MM-dd} {result.Start:HH\\:mm}-{result.End:HH\\:mm}",
                 new { plannedEntryId = sourceId, before, after = result });
             Load(WeekStart);
         }
@@ -140,13 +140,13 @@ public partial class WeekViewModel : ObservableObject
         {
             _dataService.NotifyChanged();
             _auditLog.Log("PlannedEntryDeleted",
-                $"Deleted planned entry on {existing.Date:yyyy-MM-dd} {existing.StartTime:HH\\:mm}-{existing.EndTime:HH\\:mm}",
+                $"Deleted planned entry on {existing.Date:yyyy-MM-dd} {existing.Start:HH\\:mm}-{existing.End:HH\\:mm}",
                 new { plannedEntry = existing });
             Load(WeekStart);
         }
     }
 
-    public bool Reschedule(Guid sourceId, DateOnly occurrenceDate, DateOnly newDate, TimeOnly newStart, TimeOnly newEnd)
+    public bool Reschedule(Guid sourceId, DateOnly occurrenceDate, DateTime newStart, DateTime newEnd)
     {
         var entry = _dataService.Data.PlannedEntries.FirstOrDefault(p => p.Id == sourceId);
         if (entry == null) return false;
@@ -160,7 +160,7 @@ public partial class WeekViewModel : ObservableObject
         }
 
         var applied = PlannedEntryRescheduler.TryReschedule(
-            _dataService, _auditLog, entry, occurrenceDate, newDate, newStart, newEnd, scope);
+            _dataService, _auditLog, entry, occurrenceDate, newStart, newEnd, scope);
         if (applied) Load(WeekStart);
         return applied;
     }

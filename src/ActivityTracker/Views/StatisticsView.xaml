@@ -32,7 +32,7 @@
                     <StackPanel>
                         <TextBlock Text="TOTAL HOURS" Style="{StaticResource CardHeader}"/>
                         <TextBlock FontSize="36" FontWeight="Light" Foreground="{StaticResource AccentAmber}">
-                            <Run Text="{Binding TotalHours, StringFormat='{}{0:0.#}'}"/>
+                            <Run Text="{Binding TotalHours, StringFormat='{}{0:0.00}'}"/>
                         </TextBlock>
                     </StackPanel>
                 </Border>
@@ -55,11 +55,11 @@
                                 <DockPanel Margin="0,8">
                                     <StackPanel DockPanel.Dock="Right" Width="190" Margin="16,0,0,0">
                                         <TextBlock FontSize="12" Foreground="{StaticResource TextSecondary}">
-                                            <Run Text="{Binding TotalHours, StringFormat='{}{0:0.#}h'}"/>
+                                            <Run Text="{Binding TotalHours, StringFormat='{}{0:0.00}h'}"/>
                                             <Run Text=" total"/>
                                         </TextBlock>
                                         <TextBlock FontSize="11" Foreground="{StaticResource TextMuted}">
-                                            <Run Text="{Binding DailyAverage, StringFormat='{}{0:0.##}h/day'}"/>
+                                            <Run Text="{Binding DailyAverage, StringFormat='{}{0:0.00}h/day'}"/>
                                             <Run Text=" · "/>
                                             <Run Text="{Binding ActiveDays}"/>
                                             <Run Text=" days · "/>
@@ -108,9 +108,9 @@
                                                    Foreground="{StaticResource TextPrimary}"/>
                                         <TextBlock DockPanel.Dock="Right" FontSize="12"
                                                    Foreground="{StaticResource TextSecondary}">
-                                            <Run Text="{Binding ActualHours, StringFormat='{}{0:0.#}'}"/>
+                                            <Run Text="{Binding ActualHours, StringFormat='{}{0:0.00}'}"/>
                                             <Run Text=" / " Foreground="{StaticResource TextMuted}"/>
-                                            <Run Text="{Binding TargetHours, StringFormat='{}{0:0.#}h'}"/>
+                                            <Run Text="{Binding TargetHours, StringFormat='{}{0:0.00}h'}"/>
                                             <Run Text=" ("/>
                                             <Run Text="{Binding ProgressPercentage, StringFormat='{}{0:0}%'}"/>
                                             <Run Text=")"/>

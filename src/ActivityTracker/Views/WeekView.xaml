@@ -186,6 +186,16 @@
                                                             MouseLeftButtonDown="EntryBlock_MouseLeftButtonDown"
                                                             MouseMove="EntryBlock_MouseMove"
                                                             MouseLeftButtonUp="EntryBlock_MouseLeftButtonUp">
+                                                        <Border.Style>
+                                                            <Style TargetType="Border">
+                                                                <Setter Property="Opacity" Value="1"/>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding IsContinuation}" Value="True">
+                                                                        <Setter Property="Opacity" Value="0.65"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Border.Style>
                                                         <Border.Background>
                                                             <Binding Path="Color" Converter="{StaticResource StringToBrushConverter}"/>
                                                         </Border.Background>
@@ -201,7 +211,7 @@
                                                                    TextTrimming="CharacterEllipsis" TextWrapping="Wrap">
                                                             <Run Text="{Binding ActivityName}" FontWeight="SemiBold"/>
                                                             <LineBreak/>
-                                                            <Run Text="{Binding StartTime, StringFormat='{}{0:HH:mm}'}"/>
+                                                            <Run Text="{Binding Start, StringFormat='{}{0:HH:mm}'}"/>
                                                         </TextBlock>
                                                     </Border>
                                                 </DataTemplate>
